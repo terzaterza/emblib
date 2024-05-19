@@ -9,7 +9,7 @@ namespace emblib::drivers {
 class serial_device {
 
 public:
-    serial_device() {}
+    explicit serial_device() {}
     virtual ~serial_device() = default;
 
     /* Copy operations not allowed */

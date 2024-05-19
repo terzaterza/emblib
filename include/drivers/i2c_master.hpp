@@ -2,7 +2,7 @@
 
 #include "emblib.hpp"
 #include "common/status.hpp"
-#include "drivers/i2c_types.hpp"
+#include "drivers/i2c_address.hpp"
 #include "rtos/mutex.hpp"
 
 namespace emblib::drivers {

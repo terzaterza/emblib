@@ -2,7 +2,7 @@
 
 #include "emblib.hpp"
 #include "drivers/i2c_master.hpp"
-#include "drivers/i2c_types.hpp"
+#include "drivers/i2c_address.hpp"
 #include "drivers/serial_device.hpp"
 
 namespace emblib::drivers {
