@@ -1,0 +1,8 @@
+#pragma once
+
+#define EMBLIB_TIME_ALIGN_MILLIS    1
+
+#define EMBLIB_RTOS_USE_FREERTOS    0
+#define EMBLIB_RTOS_USE_THREADX     0
+
+#define EMBLIB_I2C_7BIT_ADDRESS     1
