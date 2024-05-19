@@ -6,3 +6,7 @@
 #include <cassert>
 
 #include "emblib_config.hpp"
+
+#ifndef UNUSED
+#define UNUSED  ((void)(x))
+#endif

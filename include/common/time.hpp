@@ -21,4 +21,15 @@ typedef std::chrono::duration<int32_t>                  sec;
 
 #endif
 
+
+#if EMBLIB_TIME_TICK_MILLIS
+
+typedef millisec tick;
+
+#else
+
+#error "Implement alternative to millisec ticks"
+
+#endif
+
 }

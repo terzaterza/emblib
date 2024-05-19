@@ -1,6 +1,7 @@
 #pragma once
 
 #define EMBLIB_TIME_ALIGN_MILLIS    1
+#define EMBLIB_TIME_TICK_MILLIS     1
 
 #define EMBLIB_RTOS_USE_FREERTOS    0
 #define EMBLIB_RTOS_USE_THREADX     0
