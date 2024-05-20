@@ -1,0 +1,1 @@
+#include "stm32f4_hal_i2c_master.hpp"

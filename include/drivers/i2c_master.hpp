@@ -7,14 +7,10 @@
 
 namespace emblib::drivers {
 
-struct i2c_master_config {
-    uint32_t clk_freq;
-};
-
 class i2c_master {
 
 public:
-    explicit i2c_master(const i2c_master_config& config) : config(config) {}
+    explicit i2c_master() {}
     virtual ~i2c_master() = default;
 
     /* Copy operations not allowed */
@@ -51,9 +47,10 @@ public:
     */
     status reset();
 
+    /** @todo Add async write/read using dma, and add registrable callbacks with status as parameter */
+
 
 private:
-    const i2c_master_config config;
     rtos::mutex mutex;
 
     virtual status write_handler(const i2c_address address, const uint8_t* data, const size_t size) = 0;

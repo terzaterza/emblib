@@ -11,7 +11,8 @@ constexpr time::tick MUTEX_MAX_TICKS{time::millisec(1)};
 class mutex_base {
 
 public:
-    mutex_base() = delete;
+    explicit mutex_base() = default;
+    virtual ~mutex_base() = default;
 
 protected:
 
