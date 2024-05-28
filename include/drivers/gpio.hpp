@@ -14,6 +14,8 @@ struct gpio_config {
 class gpio {
 
 public:
+    typedef uint32_t pin_id;
+    
     enum class state {
         LOW, HIGH
     };
@@ -31,7 +33,7 @@ public:
     };
 
 public:
-    explicit gpio() {}
+    explicit gpio() = default;
     virtual ~gpio() = default;
 
     /* Copy operations not allowed */

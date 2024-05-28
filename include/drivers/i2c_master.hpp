@@ -10,7 +10,7 @@ namespace emblib::drivers {
 class i2c_master {
 
 public:
-    explicit i2c_master() {}
+    explicit i2c_master() = default;
     virtual ~i2c_master() = default;
 
     /* Copy operations not allowed */

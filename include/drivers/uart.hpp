@@ -33,7 +33,8 @@ public:
 
 public:
     // explicit uart(const uart_config& config) : config(config) {}
-    explicit uart() {}
+
+    explicit uart() = default;
     ~uart() override = default;
 
     /**
