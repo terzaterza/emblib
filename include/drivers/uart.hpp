@@ -15,25 +15,29 @@ struct uart_config {
 class uart : private serial_device {
 
 public:
-    enum class baud_rate {
-        BR9600, BR115200
+    enum class baud_rate : uint32_t {
+        BR9600      = 9600,
+        BR115200    = 115200
     };
 
-    enum class data_bits {
-        DB7, DB8, DB9
+    enum class data_bits : uint8_t {
+        DB7 = 7,
+        DB8 = 8,
+        DB9 = 9
     };
 
-    enum class stop_bits {
-        SB1, SB2
+    enum class stop_bits : uint8_t {
+        SB1 = 1,
+        SB2 = 2
     };
 
     enum class parity_bit {
-        NONE, EVEN, ODD
+        NONE,
+        EVEN,
+        ODD
     };
 
 public:
-    // explicit uart(const uart_config& config) : config(config) {}
-
     explicit uart() = default;
     ~uart() override = default;
 
