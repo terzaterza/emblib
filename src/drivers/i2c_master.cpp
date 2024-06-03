@@ -1,4 +1,4 @@
-#include "drivers/i2c_master.hpp"
+#include "emblib/drivers/i2c_master.hpp"
 
 namespace emblib::drivers {
 

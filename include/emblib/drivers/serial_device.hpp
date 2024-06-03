@@ -1,8 +1,8 @@
 #pragma once
 
-#include "emblib.hpp"
-#include "common/status.hpp"
-#include "rtos/mutex.hpp"
+#include "emblib/emblib.hpp"
+#include "emblib/common/status.hpp"
+#include "emblib/rtos/mutex.hpp"
 
 namespace emblib::drivers {
 

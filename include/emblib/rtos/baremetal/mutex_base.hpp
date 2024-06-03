@@ -1,8 +1,8 @@
 #pragma once
 
-#include "emblib.hpp"
-#include "common/status.hpp"
-#include "common/time.hpp"
+#include "emblib/emblib.hpp"
+#include "emblib/common/status.hpp"
+#include "emblib/common/time.hpp"
 
 namespace emblib::rtos {
 

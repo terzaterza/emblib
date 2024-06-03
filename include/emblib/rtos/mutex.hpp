@@ -1,15 +1,15 @@
 #pragma once
 
-#include "emblib.hpp"
-#include "common/status.hpp"
-#include "common/time.hpp"
+#include "emblib/emblib.hpp"
+#include "emblib/common/status.hpp"
+#include "emblib/common/time.hpp"
 
 #if EMBLIB_RTOS_USE_FREERTOS
-#include "rtos/freertos/mutex_base.hpp"
+#include "emblib/rtos/freertos/mutex_base.hpp"
 #elif EMBLIB_RTOS_USE_THREADX
-#include "rtos/threadx/mutex_base.hpp"
+#include "emblib/rtos/threadx/mutex_base.hpp"
 #else
-#include "rtos/baremetal/mutex_base.hpp"
+#include "emblib/rtos/baremetal/mutex_base.hpp"
 #endif
 
 namespace emblib::rtos {

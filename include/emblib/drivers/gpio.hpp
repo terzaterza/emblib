@@ -1,7 +1,7 @@
 #pragma once
 
-#include "emblib.hpp"
-#include "common/status.hpp"
+#include "emblib/emblib.hpp"
+#include "emblib/common/status.hpp"
 
 namespace emblib::drivers {
 

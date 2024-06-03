@@ -1,7 +1,7 @@
 #pragma once
 
-#include "emblib.hpp"
-#include "drivers/serial_device.hpp"
+#include "emblib/emblib.hpp"
+#include "emblib/drivers/serial_device.hpp"
 
 namespace emblib::drivers {
 

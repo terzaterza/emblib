@@ -1,9 +1,9 @@
 #pragma once
 
-#include "emblib.hpp"
-#include "drivers/i2c_master.hpp"
-#include "drivers/i2c_address.hpp"
-#include "drivers/serial_device.hpp"
+#include "emblib/emblib.hpp"
+#include "emblib/drivers/i2c_master.hpp"
+#include "emblib/drivers/i2c_address.hpp"
+#include "emblib/drivers/serial_device.hpp"
 
 namespace emblib::drivers {
 
