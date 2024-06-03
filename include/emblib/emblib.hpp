@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cassert>
 
-#include "emblib/config.hpp"
+#include "emblib_config.hpp"
 
 #ifndef UNUSED
 #define UNUSED  ((void)(x))
