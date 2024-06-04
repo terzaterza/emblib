@@ -4,18 +4,17 @@
 #include "emblib/common/status.hpp"
 #include "emblib/common/time.hpp"
 
-namespace emblib::rtos {
+namespace emblib::rtos::baremetal {
 
 constexpr time::tick MUTEX_MAX_TICKS{time::millisec(1)};
 
 class mutex_base {
 
-public:
+protected:
     explicit mutex_base() = default;
     virtual ~mutex_base() = default;
 
-protected:
-
+public:
     /**
      * Baremetal stub implementation for RTOS lock
      * @note Always returns `status::OK`
