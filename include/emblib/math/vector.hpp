@@ -15,8 +15,7 @@ namespace emblib::math {
 template <typename scalar_t, size_t dim>
 using vector = glm::vec<dim, scalar_t, glm::defaultp>;
 
-template <size_t dim, glm::qualifier q>
-using all = glm::all<dim, q>;
+using glm::all;
 
 #else
 

@@ -15,6 +15,18 @@ namespace emblib::math {
 template <typename scalar_t, size_t rows, size_t cols>
 using matrix = glm::mat<cols, rows, scalar_t, glm::defaultp>;
 
+using glm::transpose;
+using glm::inverse;
+
+template <typename scalar_t, size_t dim>
+constexpr matrix<scalar_t, dim, dim> identity() noexcept
+{
+    matrix<scalar_t, dim, dim> m;
+    for (size_t i = 0; i < dim; i++)
+        m(i, i) = 1;
+    return m;
+}
+
 #else
 
 
