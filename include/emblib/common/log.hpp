@@ -42,7 +42,10 @@ public:
     logger& operator<<(const T& data) noexcept
     {
         std::string temp = std::to_string(data);
-        this->write_to_buffer(temp);
+        buffer += temp;
+
+        if (buffer.back() == '\n')
+            flush();
     }
 
     /**
@@ -93,17 +96,6 @@ private:
      * Data buffer
     */
     std::string buffer;
-
-    /**
-     * Write to buffer and flush if needed
-    */
-    void write_to_buffer(const std::string& str)
-    {
-        buffer += str;
-
-        if (buffer.back() == '\n')
-            flush();
-    }
 
 };
 
