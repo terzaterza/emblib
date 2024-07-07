@@ -32,6 +32,8 @@ public:
             this->flush();
 
         this->msg_level = level;
+
+        return *this;
     }
     
     /**
@@ -46,6 +48,8 @@ public:
 
         if (buffer.back() == '\n')
             flush();
+
+        return *this;
     }
 
     /**
