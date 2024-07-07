@@ -7,3 +7,6 @@
 [submodule "lib/etl"]
 	path = lib/etl
 	url = https://github.com/ETLCPP/etl.git
+[submodule "lib/Catch2"]
+	path = lib/Catch2
+	url = https://github.com/catchorg/Catch2
