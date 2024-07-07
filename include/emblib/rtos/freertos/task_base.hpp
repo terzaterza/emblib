@@ -13,12 +13,12 @@ template <size_t stack_words, typename params_type>
 class task {
 
 public:
-    explicit task(const char* name, size_t priority, params_type params) noexcept
-        : task_handle(xTaskCreateStatic(
-            task_function,
+    explicit task(const char* name, size_t priority, const params_type& params) noexcept
+        : task_params(params), task_handle(xTaskCreateStatic(
+            run,
             name,
             stack_words,
-            &params, priority,
+            &task_params, priority,
             stack_buffer,
             &task_buffer
         )) {}
@@ -77,9 +77,15 @@ private:
     StackType_t stack_buffer[stack_words];
     StaticTask_t task_buffer;
     TaskHandle_t task_handle;
+    params_type task_params;
+
     TickType_t delay_until_last = 0;
 
-    virtual void task_function(params_type* params) = 0;
+    /**
+     * Task function
+     * @note Should never return
+    */
+    virtual void run(params_type* params) = 0;
 
 };
 
