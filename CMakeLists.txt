@@ -23,6 +23,7 @@ message(STATUS "GLM and ETL need to be built and installed, follow GitHub readme
 
 add_subdirectory("lib/etl")
 add_subdirectory("lib/glm")
+add_subdirectory("lib/eigen")
 add_subdirectory("lib/Catch2")
 add_subdirectory("lib/FreeRTOS-Kernel")
 add_subdirectory("test")
@@ -43,4 +44,5 @@ target_link_libraries(emblib INTERFACE
     freertos_kernel
     etl::etl
     glm::glm-header-only
+    eigen
 )

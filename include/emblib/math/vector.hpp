@@ -4,6 +4,8 @@
 
 #if EMBLIB_MATH_USE_GLM
 #include "glm/matrix.hpp"
+#elif EMBLIB_MATH_USE_EIGEN
+#include "Eigen/Dense"
 #else
 #error "No current math library implementation"
 #endif
@@ -17,6 +19,11 @@ using vector = glm::vec<dim, scalar_t, glm::defaultp>;
 
 using glm::all;
 
+#elif EMBLIB_MATH_USE_EIGEN
+
+template <typename scalar_t, size_t dim>
+using vector = Eigen::Vector<scalar_t, dim>;
+
 #else
 
 
@@ -27,5 +34,14 @@ using glm::all;
 
 using vec2f = vector<float, 2>;
 using vec3f = vector<float, 3>;
+
+
+template <typename scalar_t, size_t dim_1, size_t dim_2>
+vector<scalar_t, dim_1 + dim_2> vector_stack(const vector<scalar_t, dim_1>& v1, const vector<scalar_t, dim_2>& v2)
+{
+    vector<scalar_t, dim_1 + dim_2> result;
+    result << v1, v2;
+    return result;
+}
 
 }
