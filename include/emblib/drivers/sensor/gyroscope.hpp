@@ -7,24 +7,19 @@
 namespace emblib::drivers::sensor {
 
 template <typename raw_scalar_t = int16_t>
-class accelerometer {
+class gyroscope {
 
 public:
     using raw_data = math::vector<raw_scalar_t, 3>;
 
     /**
-     * Conversion rate from standard gravity to meters per second^2
-     */
-    static constexpr float G_TO_MPS2 = 9.80665f;
-
-    /**
-     * Sensitivity is the conversion rate from raw data to standard gravity [g]
+     * Sensitivity is the conversion rate from raw data to radians per second [s^-1]
     */
-    explicit accelerometer(float default_sensitivity) noexcept :
+    explicit gyroscope(float default_sensitivity) noexcept :
         sensitivity(default_sensitivity) {}
 
     /**
-     * Read raw accelerometer data
+     * Read raw gyroscope data
     */
     virtual status read_raw(raw_data& vec) noexcept = 0;
 
