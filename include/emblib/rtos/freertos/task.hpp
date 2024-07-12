@@ -9,11 +9,11 @@
 
 namespace emblib::rtos::freertos {
 
-template <size_t stack_words, typename params_type>
+template <size_t stack_words = 128, typename params_t = void>
 class task {
 
 public:
-    explicit task(const char* name, size_t priority, const params_type& params) noexcept
+    explicit task(const char* name, size_t priority, const params_t& params) noexcept
         : task_params(params), task_handle(xTaskCreateStatic(
             run,
             name,
@@ -34,6 +34,14 @@ public:
     }
 
     /**
+     * Delay currently running task
+     */
+    static void delay(time::tick ticks) noexcept
+    {
+        vTaskDelay(ticks.count());
+    }
+
+    /**
      * Increase task notification value and unblock task if is currently waiting
     */
     void notify() noexcept
@@ -47,7 +55,7 @@ protected:
     */
     void delay(time::tick ticks) noexcept
     {
-        vTaskDelay(ticks.count());
+        task::delay(ticks);
     }
 
     /**
@@ -77,7 +85,7 @@ private:
     StackType_t stack_buffer[stack_words];
     StaticTask_t task_buffer;
     TaskHandle_t task_handle;
-    params_type task_params;
+    params_t task_params;
 
     TickType_t delay_until_last = 0;
 
@@ -85,7 +93,7 @@ private:
      * Task function
      * @note Should never return
     */
-    virtual void run(params_type* params) = 0;
+    virtual void run(params_t* params) = 0;
 
 };
 
