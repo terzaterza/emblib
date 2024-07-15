@@ -3,8 +3,8 @@
 #include "emblib/emblib.hpp"
 #include "emblib/drivers/serial_device.hpp"
 
-#include <string>
-#include <iostream>
+#include "etl/string.h"
+#include "etl/to_string.h"
 
 namespace emblib::log {
 
@@ -18,9 +18,16 @@ enum class log_level {
 class logger {
 
 public:
+    /**
+     * Logger buffer size before needing to flush
+     */
+    static constexpr size_t BUFFER_CAPACITY = 128;
 
+    /**
+     * Default constructor
+     */
     explicit logger(drivers::serial_device* log_device = nullptr) noexcept
-        : log_device(log_device), msg_level(log_level::INFO) {}
+        : log_device(log_device) {}
 
     /**
      * Set the log level for the following messages
@@ -28,11 +35,11 @@ public:
     */
     logger& operator<<(log_level level) noexcept
     {
-        if (this->buffer.size() > 0)
-            this->flush();
+        if (buffer.size() > 0) {
+            flush();
+        }
 
-        this->msg_level = level;
-
+        msg_level = level;
         return *this;
     }
     
@@ -43,12 +50,11 @@ public:
     template <typename T>
     logger& operator<<(const T& data) noexcept
     {
-        std::string temp = std::to_string(data);
-        buffer += temp;
+        etl::to_string(data, buffer, true);
 
-        if (buffer.back() == '\n')
+        if (buffer.size() == buffer.max_size() || buffer.back() == '\n') {
             flush();
-
+        }
         return *this;
     }
 
@@ -60,23 +66,30 @@ public:
     */
     void flush() noexcept
     {
-        if (!log_device || msg_level < logger::global_output_level)
+        if (!log_device || msg_level < logger::global_output_level) {
             return;
+        }
 
-        static const std::string prefix[] = { "DEBUG", "INFO", "WARN", "ERROR" };
+        static const std::array<etl::string<5>, 4> prefix = { "DEBUG", "INFO", "WARN", "ERROR" };
+        const etl::string<BUFFER_CAPACITY + 8> output_str = prefix[(int)this->msg_level] + ": " + buffer;
 
-        const std::string prefix_str = prefix[(int)this->msg_level] + ": ";
-        const std::string output_str = prefix_str + buffer;
-
-        log_device->write((const uint8_t*)output_str.c_str(), output_str.size());
+        log_device->write(reinterpret_cast<const uint8_t*>(output_str.c_str()), output_str.size());
     }
 
     /**
      * Set the global logging level
     */
-    void set_global_level(log_level level) noexcept
+    static void set_global_level(log_level level) noexcept
     {
         logger::global_output_level = level;
+    }
+
+    /**
+     * Set output serial device
+     */
+    void set_output_device(drivers::serial_device& device) noexcept
+    {
+        this->log_device = &device;
     }
 
 private:
@@ -89,7 +102,7 @@ private:
      * All messages with `msg_level` >= `logger::global_output_level` will be output during runtime
      * @note Can only be set via << operator
     */
-    log_level msg_level;
+    log_level msg_level = log_level::INFO;
     
     /**
      * Serial device for writing the log data
@@ -99,7 +112,7 @@ private:
     /**
      * Data buffer
     */
-    std::string buffer;
+    etl::string<buffer_size> buffer;
 
 };
 
