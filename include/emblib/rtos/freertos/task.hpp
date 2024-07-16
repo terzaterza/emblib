@@ -9,7 +9,7 @@
 
 namespace emblib::rtos::freertos {
 
-template <size_t stack_words = 128, typename params_t = void>
+template <size_t stack_words, typename params_t>
 class task {
 
 public:
@@ -24,6 +24,14 @@ public:
         )) {}
 
     virtual ~task() = default;
+
+    /* Copy operations not allowed */
+    task(const task&) = delete;
+    task& operator=(const task&) = delete;
+
+    /* Move operations not allowed */
+    task(task&&) = delete;
+    task& operator=(task&&) = delete;
 
     /**
      * Start FreeRTOS scheduler
@@ -51,21 +59,14 @@ public:
 
 protected:
     /**
-     * Wait for `ticks` before resuming
-    */
-    void delay(time::tick ticks) noexcept
-    {
-        task::delay(ticks);
-    }
-
-    /**
      * Task will resume after `ticks` since the last time this function was called
      * @returns `true` if the task execution was delayed, else `false`
     */
     bool delay_until(time::tick ticks) noexcept
     {
-        if (this->delay_until_last == 0)
+        if (this->delay_until_last == 0) {
             this->delay_until_last = xTaskGetTickCount();
+        }
 
         return xTaskDelayUntil(&this->delay_until_last, ticks.count());
     }
@@ -93,7 +94,7 @@ private:
      * Task function
      * @note Should never return
     */
-    virtual void run(params_t* params) = 0;
+    virtual void run(params_t* params) noexcept = 0;
 
 };
 

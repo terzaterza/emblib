@@ -9,16 +9,27 @@
 
 namespace emblib::rtos::freertos {
 
-constexpr time::tick MUTEX_MAX_TICKS{portMAX_DELAY};
-
-class mutex_base {
+class mutex {
 
 public:
+    explicit mutex() noexcept :
+        semaphore_handle(xSemaphoreCreateMutexStatic(&semaphore_buffer))
+    {}
+
+    virtual ~mutex() = default;
+
+    /* Copy operations not allowed */
+    mutex(const mutex&) = delete;
+    mutex& operator=(const mutex&) = delete;
+
+    /* Move operations not allowed */
+    mutex(mutex&&) = delete;
+    mutex& operator=(mutex&&) = delete;
 
     /**
      * Mutex take
     */
-    status lock(time::tick ticks = MUTEX_MAX_TICKS) noexcept
+    status lock(time::tick ticks = time::tick{portMAX_DELAY}) noexcept
     {
         BaseType_t ret_status = xSemaphoreTake(semaphore_handle, ticks.count());
         return ret_status == pdTRUE ? status::OK : status::ERROR;
@@ -32,12 +43,6 @@ public:
         BaseType_t ret_status = xSemaphoreGive(semaphore_handle);
         return ret_status == pdTRUE ? status::OK : status::ERROR;
     }
-
-protected:
-    explicit mutex_base() noexcept
-        : semaphore_handle(xSemaphoreCreateMutexStatic(&semaphore_buffer)) {}
-
-    virtual ~mutex_base() = default;
 
 private:
     StaticSemaphore_t semaphore_buffer;
