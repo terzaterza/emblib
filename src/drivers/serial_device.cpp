@@ -2,59 +2,66 @@
 
 namespace emblib::drivers {
 
-
-status serial_device::write(const uint8_t* data, const size_t size)
+status serial_device::write(const char* data, size_t size) noexcept
 {
     status ret_status = status::ERROR;
 
-    /** @todo Log serial device write start */
-
-    if (this->mutex.lock(rtos::MUTEX_MAX_TICKS) == status::OK) {
+    /* Lock indefinetely by default */
+    if (this->mutex.lock() == status::OK) {
         ret_status = this->write_handler(data, size);
         assert(this->mutex.unlock() == status::OK);
     }
-
-    /** @todo If lock failed, log mutex lock fail */
-    /** @todo Log ret_status */
-
     return ret_status;
 }
 
 
-status serial_device::read(uint8_t* buffer, const size_t size)
+status serial_device::read(char* buffer, size_t size) noexcept
 {
     status ret_status = status::ERROR;
 
-    /** @todo Log serial device read start */
-
-    if (this->mutex.lock(rtos::MUTEX_MAX_TICKS) == status::OK) {
+    /* Lock indefinetely by default */
+    if (this->mutex.lock() == status::OK) {
         ret_status = this->read_handler(buffer, size);
         assert(this->mutex.unlock() == status::OK);
     }
-
-    /** @todo If lock failed, log mutex lock fail */
-    /** @todo Log ret_status */
-
     return ret_status;
 }
 
 
-status serial_device::probe()
+status serial_device::write_async(const char* data, size_t size) noexcept
 {
     status ret_status = status::ERROR;
 
-    /** @todo Log serial device read start */
-
-    if (this->mutex.lock(rtos::MUTEX_MAX_TICKS) == status::OK) {
-        ret_status = this->probe_handler();
-        assert(this->mutex.unlock() == status::OK);
+    /* Lock indefinetely by default */
+    if (this->mutex.lock() == status::OK) {
+        ret_status = this->write_async_handler(data, size, async_write_complete);
     }
-
-    /** @todo If lock failed, log mutex lock fail */
-    /** @todo Log ret_status */
-
     return ret_status;
 }
 
+
+status serial_device::read_async(char* buffer, size_t size) noexcept
+{
+    status ret_status = status::ERROR;
+
+    /* Lock indefinetely by default */
+    if (this->mutex.lock() == status::OK) {
+        ret_status = this->read_async_handler(buffer, size, async_read_complete);
+    }
+    return ret_status;
+}
+
+
+status serial_device::probe() noexcept
+{
+    status ret_status = status::ERROR;
+
+    /* Lock indefinetely by default */
+    if (this->mutex.lock() == status::OK) {
+        ret_status = this->probe_handler();
+        assert(this->mutex.unlock() == status::OK);
+    }
+    return ret_status;
+}
 
 }

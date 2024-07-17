@@ -29,18 +29,18 @@ add_subdirectory("lib/FreeRTOS-Kernel")
 add_subdirectory("test")
 
 
-add_library(emblib INTERFACE
+add_library(emblib STATIC
     src/common/log.cpp
-    src/drivers/i2c_master.cpp
+    # src/drivers/i2c_master.cpp
     src/drivers/serial_device.cpp
 )
 
-target_include_directories(emblib INTERFACE
+target_include_directories(emblib PUBLIC
     "${PROJECT_SOURCE_DIR}/src"
     "${PROJECT_SOURCE_DIR}/include"
 )
 
-target_link_libraries(emblib INTERFACE
+target_link_libraries(emblib PUBLIC
     freertos_kernel
     etl::etl
     glm::glm-header-only
