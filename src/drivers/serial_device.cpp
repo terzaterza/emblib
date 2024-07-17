@@ -34,7 +34,7 @@ status serial_device::write_async(const char* data, size_t size) noexcept
 
     /* Lock indefinetely by default */
     if (this->mutex.lock() == status::OK) {
-        ret_status = this->write_async_handler(data, size, async_write_complete);
+        ret_status = this->write_async_handler(data, size);
     }
     return ret_status;
 }
@@ -46,7 +46,7 @@ status serial_device::read_async(char* buffer, size_t size) noexcept
 
     /* Lock indefinetely by default */
     if (this->mutex.lock() == status::OK) {
-        ret_status = this->read_async_handler(buffer, size, async_read_complete);
+        ret_status = this->read_async_handler(buffer, size);
     }
     return ret_status;
 }

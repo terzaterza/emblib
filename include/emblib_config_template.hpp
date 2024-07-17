@@ -10,3 +10,12 @@
 
 #define EMBLIB_MATH_USE_GLM         0
 #define EMBLIB_MATH_USE_EIGEN       1
+
+namespace emblib {
+
+/**
+ * Logger buffer size
+ */
+static constexpr size_t LOGGER_BUFFER_SIZE = 64;
+
+}

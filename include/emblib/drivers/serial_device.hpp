@@ -4,13 +4,15 @@
 #include "emblib/common/status.hpp"
 #include "emblib/rtos/mutex.hpp"
 
+#include "etl/string.h"
+
 namespace emblib::drivers {
 
 class serial_device {
 
 /* Class private typedef for callback functions */
-using callback_t = void (*)(status);
-using callback_priv_t = void (serial_device::*)(status);
+template <typename context_t>
+using callback_t = void (*)(status, context_t*);
 
 public:
     explicit serial_device() = default;
@@ -57,29 +59,54 @@ public:
      * @note Can be implemented as a dummy read
     */
     status probe() noexcept;
+    
+    /**
+     * Write overload for string objects
+     */
+    template <size_t size>
+    status write(const etl::string<size>& string) noexcept
+    {
+        return write(string.c_str(), string.size());
+    }
+
+    /**
+     * Write async overload for string objects
+     */
+    template <size_t size>
+    status write_async(const etl::string<size>& string) noexcept
+    {
+        return write_async(string.c_str(), string.size());
+    }
 
     /**
      * @return `true` if current serial device supports async operations
      */
-    virtual bool async_available() noexcept = 0;
+    virtual bool async_available() noexcept
+    {
+        return false;
+    }
 
     /**
      * Set the async write callback
      */
-    void set_write_callback(callback_t callback) noexcept
+    template <typename context_t>
+    void set_write_callback(callback_t<context_t> callback, context_t* ctx) noexcept
     {
-        write_callback = callback;
+        write_callback = reinterpret_cast<callback_t<void>>(callback); /** @todo Switch to using static cast */
+        write_callback_context = ctx; /** @todo Can pass context as param when calling async_write */
     }
 
     /**
      * Set the async read callback
      */
-    void set_read_callback(callback_t callback) noexcept
+    template <typename context_t>
+    void set_read_callback(callback_t<context_t> callback, context_t* ctx) noexcept
     {
-        read_callback = callback;
+        read_callback = reinterpret_cast<callback_t<void>>(callback);
+        read_callback_context = ctx; /** @todo Can pass context as param when calling async_read */
     }
 
-private:
+protected:
     /**
      * To be called by serial device implementation on finishing async write
      */
@@ -87,7 +114,7 @@ private:
     {
         assert(mutex.unlock() == status::OK);
         if (write_callback) {
-            write_callback(ret_status);
+            write_callback(ret_status, write_callback_context);
         }
     }
 
@@ -98,8 +125,35 @@ private:
     {
         assert(mutex.unlock() == status::OK);
         if (read_callback) {
-            read_callback(ret_status);
+            read_callback(ret_status, read_callback_context);
         }
+    }
+
+private:
+    /**
+     * Implementation of write operation
+     */
+    virtual status write_handler(const char* data, size_t size) = 0;
+
+    /**
+     * Implementation of read operation
+     */
+    virtual status read_handler(char* buffer, size_t size) = 0;
+
+    /**
+     * Async operations not supported by default
+     */
+    virtual status write_async_handler(const char* data, size_t size)
+    {
+        return status::ERROR_NOTIMPL;
+    }
+
+    /**
+     * Async operations not supported by default
+     */
+    virtual status read_async_handler(char* buffer, size_t size)
+    {
+        return status::ERROR_NOTIMPL;
     }
 
     /**
@@ -113,13 +167,10 @@ private:
 private:
     rtos::mutex mutex;
 
-    callback_t write_callback = nullptr;
-    callback_t read_callback = nullptr;
-
-    virtual status write_handler(const char* data, size_t size) = 0;
-    virtual status read_handler(char* buffer, size_t size) = 0;
-    virtual status write_async_handler(const char* data, size_t size, callback_priv_t callback) = 0;
-    virtual status read_async_handler(char* buffer, size_t size, callback_priv_t callback) = 0;
+    callback_t<void> write_callback = nullptr;
+    callback_t<void> read_callback = nullptr;
+    void* write_callback_context = nullptr;
+    void* read_callback_context = nullptr;
 };
 
 }
