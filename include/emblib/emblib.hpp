@@ -8,5 +8,5 @@
 #include "emblib_config.hpp"
 
 #ifndef UNUSED
-#define UNUSED  ((void)(x))
+#define UNUSED(x)   ((void)(x))
 #endif

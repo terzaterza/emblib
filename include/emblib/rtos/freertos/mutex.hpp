@@ -3,6 +3,7 @@
 #include "emblib/emblib.hpp"
 #include "emblib/common/status.hpp"
 #include "emblib/common/time.hpp"
+#include "emblib/rtos/freertos/task.hpp"
 
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -28,18 +29,32 @@ public:
 
     /**
      * Mutex take
+     * @note If the scheduler is not yet started, this returns `status::OK`
+     * without modifying the mutex since it is assumed there will be no
+     * preemption until the scheduler starts
     */
     status lock(time::tick ticks = time::tick{portMAX_DELAY}) noexcept
     {
+        if (get_scheduler_state() == scheduler_state::NOT_STARTED) {
+            return status::OK;
+        }
+
         BaseType_t ret_status = xSemaphoreTake(semaphore_handle, ticks.count());
         return ret_status == pdTRUE ? status::OK : status::ERROR;
     }
 
     /**
      * Mutex give
+     * @note If the scheduler is not yet started, this returns `status::OK`
+     * without modifying the mutex since it is assumed there will be no
+     * preemption until the scheduler starts
     */
     status unlock() noexcept
     {
+        if (get_scheduler_state() == scheduler_state::NOT_STARTED) {
+            return status::OK;
+        }
+        
         BaseType_t ret_status = xSemaphoreGive(semaphore_handle);
         return ret_status == pdTRUE ? status::OK : status::ERROR;
     }

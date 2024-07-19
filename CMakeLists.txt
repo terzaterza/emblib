@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -31,12 +31,11 @@ add_subdirectory("test")
 
 add_library(emblib STATIC
     src/common/log.cpp
-    # src/drivers/i2c_master.cpp
     src/drivers/serial_device.cpp
+    src/rtos/freertos/task.cpp
 )
 
 target_include_directories(emblib PUBLIC
-    "${PROJECT_SOURCE_DIR}/src"
     "${PROJECT_SOURCE_DIR}/include"
 )
 
@@ -46,3 +45,5 @@ target_link_libraries(emblib PUBLIC
     glm::glm-header-only
     eigen
 )
+
+# TODO: Add a custom command for testing (cmake test)

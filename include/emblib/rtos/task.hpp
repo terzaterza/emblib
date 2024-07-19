@@ -14,8 +14,7 @@ namespace emblib::rtos {
 
 #if EMBLIB_RTOS_USE_FREERTOS
 
-template <size_t stack_words = 64, typename params_t = void>
-using task = freertos::task<stack_words, params_t>;
+using namespace freertos;
 
 #elif EMBLIB_RTOS_USE_THREADX
 
