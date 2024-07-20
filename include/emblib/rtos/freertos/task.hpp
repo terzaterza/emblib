@@ -72,7 +72,13 @@ public:
         this->params.instance = this;
         this->params.params = params;
         task_handle = xTaskCreateStatic(
-            reinterpret_cast<void (*)(void*)>(task_thread), name, stack_words, &this->params, priority, stack_buffer, &task_buffer
+            reinterpret_cast<void (*)(void*)>(task_thread),
+            name,
+            stack_words > configMINIMAL_STACK_SIZE ? stack_words : configMINIMAL_STACK_SIZE,
+            &this->params,
+            priority,
+            stack_buffer,
+            &task_buffer
         );
     }
 
@@ -95,7 +101,10 @@ protected:
             this->delay_until_last = xTaskGetTickCount();
         }
 
-        return xTaskDelayUntil(&this->delay_until_last, ticks.count());
+        // BaseType_t was_delayed = xTaskDelayUntil(&this->delay_until_last, ticks.count());
+        // return was_delayed == pdTRUE;
+        vTaskDelayUntil(&this->delay_until_last, ticks.count());
+        return true;
     }
 
     /**
@@ -123,7 +132,10 @@ private:
      * appropriate task method (task::run override) to allow for instance
      * specific task threads (allows using of `this` inside task function)
      */
-    static void task_thread(thread_params* params) noexcept;
+    static void task_thread(thread_params* params) noexcept
+    {
+        params->instance->run(params->params);
+    }
 
     /**
      * Task function

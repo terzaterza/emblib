@@ -7,10 +7,31 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(emblib VERSION 1.0)
 
 
-# FreeRTOS
-add_library(freertos_config INTERFACE)
-target_include_directories(freertos_config SYSTEM INTERFACE src)
-target_compile_definitions(freertos_config INTERFACE projCOVERAGE_TEST=0)
+# Use the default emblib FreeRTOS configuration if one not provided
+if (NOT TARGET freertos_config)
+    message(STATUS "emblib: FreeRTOS configuration not set, using emblib default FreeRTOS config")
+    add_library(freertos_config INTERFACE)
+    target_include_directories(freertos_config SYSTEM INTERFACE src)
+endif()
+
+target_compile_definitions(freertos_config INTERFACE
+    projCOVERAGE_TEST=0
+    projENABLE_TRACING=0
+)
+
+
+# If there is FreeRTOS in a parent project, use that, else use submodule
+if (TARGET freertos_kernel)
+    message(STATUS "emblib: FreeRTOS inherited from a parent project")
+else()
+    message(STATUS "emblib: Using FreeRTOS submodule from emblib")
+    add_subdirectory("lib/FreeRTOS-Kernel")
+endif()
+
+if (PROJECT_IS_TOP_LEVEL)
+    # Stub implementation for FreeRTOS hooks
+    target_sources(freertos_kernel PRIVATE src/rtos/freertos/hooks.c)
+endif()
 
 
 # GLM
@@ -19,26 +40,48 @@ set(GLM_BUILD_INSTALL OFF)
 set(GLM_ENABLE_CXX_17 ON)
 
 
-message(STATUS "GLM and ETL need to be built and installed, follow GitHub readmes for info")
-
+message(STATUS "emblib: GLM and ETL need to be built and installed, follow GitHub readmes for info")
 add_subdirectory("lib/etl")
 add_subdirectory("lib/glm")
 add_subdirectory("lib/eigen")
-add_subdirectory("lib/Catch2")
-add_subdirectory("lib/FreeRTOS-Kernel")
-add_subdirectory("test")
+
+# Testing only if this is the top level project
+if (PROJECT_IS_TOP_LEVEL)
+    add_subdirectory("lib/Catch2")
+    add_subdirectory("test")
+endif()
 
 
+# Create the library target with all the source files
 add_library(emblib STATIC
     src/common/log.cpp
     src/drivers/serial_device.cpp
-    src/rtos/freertos/task.cpp
 )
 
+# Add include folders
 target_include_directories(emblib PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
 )
 
+# If this is the top level project then use own config file
+# else import it from the parent project
+if (PROJECT_IS_TOP_LEVEL)
+    target_include_directories(emblib PUBLIC
+        "${PROJECT_SOURCE_DIR}/src"
+    )
+else()
+    if (TARGET emblib_config)
+        target_link_libraries(emblib PUBLIC emblib_config)
+    else()
+        message(FATAL_ERROR "emblib: config not found, create an interface library"
+        "and add include directory which holds the emblib config file:"
+        "add_library(emblib_config INTERFACE)"
+        "target_include_directories(emblib_config INTERFACE <path>)")
+    endif()
+endif()
+
+
+# Link all sublibraries
 target_link_libraries(emblib PUBLIC
     freertos_kernel
     etl::etl
