@@ -4,6 +4,7 @@
 #include "emblib/drivers/serial_device.hpp"
 
 #include "etl/string.h"
+#include "etl/to_string.h"
 
 namespace emblib::log {
 
@@ -27,14 +28,37 @@ public:
      * Set the log level for the following messages
      * @note If there is data in the buffer, this will flush it
     */
-    logger& operator<<(log_level level) noexcept;
+    logger& operator<<(log_level level);
     
     /**
      * Write generic data to the logger
      * @note Log flush will only be triggered if data ends with `\\n`
     */
     template <typename T>
-    logger& operator<<(const T& data) noexcept;
+    logger& operator<<(const T& data)
+    {
+        etl::to_string(data, buffer, true);
+
+        if (buffer.size() == buffer.max_size() || buffer.back() == '\n') {
+            flush();
+        }
+        return *this;
+    }
+
+    /**
+     * Write const char array to the logger
+     * @note Log flush will only be triggered if data ends with `\\n`
+    */
+    template <size_t n>
+    logger& operator<<(const char (&data)[n])
+    {
+        buffer.append(data, n);
+
+        if (buffer.size() == buffer.max_size() || buffer.back() == '\n') {
+            flush();
+        }
+        return *this;
+    }
 
     /**
      * Writes the current buffer to the serial devices and clears the buffer

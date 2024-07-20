@@ -7,25 +7,13 @@ namespace emblib::log {
 log_level logger::global_output_level = log_level::WARNING;
 
 
-logger& logger::operator<<(log_level level) noexcept
+logger& logger::operator<<(log_level level)
 {
     if (!buffer.empty()) {
         flush();
     }
 
     msg_level = level;
-    return *this;
-}
-
-
-template <typename T>
-logger& logger::operator<<(const T& data) noexcept
-{
-    etl::to_string(data, buffer, true);
-
-    if (buffer.size() == buffer.max_size() || buffer.back() == '\n') {
-        flush();
-    }
     return *this;
 }
 

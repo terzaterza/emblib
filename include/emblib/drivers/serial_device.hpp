@@ -109,8 +109,9 @@ public:
 protected:
     /**
      * To be called by serial device implementation on finishing async write
+     * @note Use `friend` to give external functions access to this
      */
-    void async_write_complete(status ret_status) noexcept
+    void write_async_complete(status ret_status) noexcept
     {
         assert(mutex.unlock() == status::OK);
         if (write_callback) {
@@ -120,8 +121,9 @@ protected:
 
     /**
      * To be called by serial device implementation on finishing async read
+     * @note Use `friend` to give external functions access to this
      */
-    void async_read_complete(status ret_status) noexcept
+    void read_async_complete(status ret_status) noexcept
     {
         assert(mutex.unlock() == status::OK);
         if (read_callback) {
@@ -145,6 +147,8 @@ private:
      */
     virtual status write_async_handler(const char* data, size_t size)
     {
+        UNUSED(data);
+        UNUSED(size);
         return status::ERROR_NOTIMPL;
     }
 
@@ -153,6 +157,8 @@ private:
      */
     virtual status read_async_handler(char* buffer, size_t size)
     {
+        UNUSED(buffer);
+        UNUSED(size);
         return status::ERROR_NOTIMPL;
     }
 
