@@ -4,7 +4,7 @@
 
 namespace emblib::log {
 
-log_level logger::global_output_level = log_level::WARNING;
+log_level logger::global_output_level = log_level::INFO;
 
 
 logger& logger::operator<<(log_level level)

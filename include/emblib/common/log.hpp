@@ -52,7 +52,7 @@ public:
     template <size_t n>
     logger& operator<<(const char (&data)[n])
     {
-        buffer.append(data, n);
+        buffer.append(data, n-1);
 
         if (buffer.size() == buffer.max_size() || buffer.back() == '\n') {
             flush();
