@@ -35,6 +35,15 @@ static inline scheduler_state get_scheduler_state()
 }
 
 /**
+ * Switch to a higher priority task if one was woken
+ */
+static inline void yield_from_isr(bool task_woken) noexcept
+{
+    BaseType_t task_woken_base_type = task_woken ? pdTRUE : pdFALSE;
+    portYIELD_FROM_ISR(task_woken_base_type);
+}
+
+/**
  * FreeRTOS Task
  */
 template <size_t stack_words, typename params_t = void>
@@ -55,14 +64,6 @@ public:
     /* Move operations not allowed */
     task(task&&) = delete;
     task& operator=(task&&) = delete;
-
-    /**
-     * Delay currently running task
-     */
-    static void delay(time::tick ticks) noexcept
-    {
-        vTaskDelay(ticks.count());
-    }
 
     /**
      * Start the task (put in ready state)
@@ -90,7 +91,29 @@ public:
         xTaskNotifyGive(task_handle);
     }
 
+    /**
+     * Increase task notification value and unblock task if is currently waiting
+     * @todo Add higher priority task woken ptr as parameter
+    */
+    void notify_from_isr(bool* task_woken = nullptr) noexcept
+    {
+        BaseType_t task_woken_bt = pdFALSE;
+        vTaskNotifyGiveFromISR(task_handle, &task_woken_bt);
+
+        if (task_woken) {
+            *task_woken = task_woken_bt == pdTRUE;
+        }
+    }
+
 protected:
+    /**
+     * Delay currently running task
+     */
+    void delay(time::tick ticks) noexcept
+    {
+        vTaskDelay(ticks.count());
+    }
+
     /**
      * Task will resume after `ticks` since the last time this function was called
      * @returns `true` if the task execution was delayed, else `false`
@@ -112,7 +135,7 @@ protected:
      * @note If clear is true, than this wait consumes all notifications which are given to this task
      * @returns `status::ERROR` if ticks expired before notification was received
     */
-    status wait_notify(time::tick ticks = time::tick(portMAX_DELAY), bool clear = true) noexcept
+    status wait_notify(time::tick ticks = time::tick{portMAX_DELAY}, bool clear = false) noexcept
     {
         uint32_t count = ulTaskNotifyTake(clear, ticks.count());
         return count > 0 ? status::OK : status::ERROR;
