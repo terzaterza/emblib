@@ -1,7 +1,6 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/status.hpp"
 #include "emblib/rtos/mutex.hpp"
 
 #include "etl/string.h"
@@ -12,7 +11,7 @@ class serial_device {
 
 /* Class private typedef for callback functions */
 template <typename context_t>
-using callback_t = void (*)(status, context_t*);
+using callback_t = void (*)(ssize_t, context_t*);
 
 public:
     explicit serial_device() = default;
@@ -28,43 +27,65 @@ public:
 
     /**
      * Write an array of bytes
+     * @returns `-1` if error, else number of bytes written
      * @note This function acquires the serial device mutex
      * @note Exits once the write operation is complete
     */
-    status write(const char* data, size_t size) noexcept;
+    ssize_t write(const char* data, size_t size) noexcept;
 
     /**
-     * Read an array of bytes
+     * Read up to `size` bytes into the buffer
+     * @returns `-1` if error, else number of bytes read
      * @note This function acquires the serial device mutex
      * @note Exits once the read operation is complete
     */
-    status read(char* buffer, size_t size) noexcept;
+    ssize_t read(char* buffer, size_t size) noexcept;
 
     /**
      * Start an async write
-     * @note Internal mutex is locked until the write is complete (released just before callback is called)
      * @return `true` if write operation started successfully
+     * @note Internal mutex is locked until the write is started (released before this function returns)
      */
-    status write_async(const char* data, size_t size) noexcept;
+    bool write_async(const char* data, size_t size) noexcept;
+
+    /**
+     * Start an async write
+     * @return `true` if write operation started successfully
+     * @note Internal mutex is acquired before the write start, and is
+     * given to the user (if start successful) for unlocking once the operation finishes
+     * @todo Instead of giving a pointer to the mutex, can just give
+     * pointer to a function which releases it (bool (serial_device::*)() noexcept)
+     */
+    bool write_async(const char* data, size_t size, rtos::mutex*& mutex) noexcept;
 
     /**
      * Start an async read
-     * @note Internal mutex is locked until the read is complete (released just before callback is called)
      * @return `true` if write operation started successfully
+     * @note Internal mutex is locked until the write is started (released before this function returns)
      */
-    status read_async(char* buffer, size_t size) noexcept;
+    bool read_async(char* buffer, size_t size) noexcept;
+    
+    /**
+     * Start an async read
+     * @note Internal mutex is acquired before the read start, and is
+     * given to the user (if start successful) for unlocking once the operation finishes
+     * @return `true` if read operation started successfully
+     */
+    bool read_async(char* buffer, size_t size, rtos::mutex*& mutex) noexcept;
 
     /**
      * Tests if the device is responding
+     * @returns `true` if device responds
      * @note Can be implemented as a dummy read
     */
-    status probe() noexcept;
-    
+    bool probe() noexcept;
+
+
     /**
      * Write overload for string objects
      */
     template <size_t size>
-    status write(const etl::string<size>& string) noexcept
+    ssize_t write(const etl::string<size>& string) noexcept
     {
         return write(string.c_str(), string.size());
     }
@@ -73,7 +94,7 @@ public:
      * Write async overload for string objects
      */
     template <size_t size>
-    status write_async(const etl::string<size>& string) noexcept
+    bool write_async(const etl::string<size>& string) noexcept
     {
         return write_async(string.c_str(), string.size());
     }
@@ -109,25 +130,29 @@ public:
 protected:
     /**
      * To be called by serial device implementation on finishing async write
+     * @note Set `bytes_written` to -1 on error
      * @note Use `friend` to give external functions access to this
      */
-    void write_async_complete(status ret_status) noexcept
+    void write_async_complete(ssize_t bytes_written) noexcept
     {
-        assert(mutex.unlock() == status::OK);
+        /* Can't unlock mutex here because this is called from ISR context */
+        // assert(mutex.unlock() == status::OK);
         if (write_callback) {
-            write_callback(ret_status, write_callback_context);
+            write_callback(bytes_written, write_callback_context);
         }
     }
 
     /**
      * To be called by serial device implementation on finishing async read
+     * @note Set `bytes_read` to -1 on error
      * @note Use `friend` to give external functions access to this
      */
-    void read_async_complete(status ret_status) noexcept
+    void read_async_complete(ssize_t bytes_read) noexcept
     {
-        assert(mutex.unlock() == status::OK);
+        /* Can't unlock mutex here because this is called from ISR context */
+        // assert(mutex.unlock() == status::OK);
         if (read_callback) {
-            read_callback(ret_status, read_callback_context);
+            read_callback(bytes_read, read_callback_context);
         }
     }
 
@@ -135,37 +160,37 @@ private:
     /**
      * Implementation of write operation
      */
-    virtual status write_handler(const char* data, size_t size) = 0;
+    virtual ssize_t write_handler(const char* data, size_t size) noexcept = 0;
 
     /**
      * Implementation of read operation
      */
-    virtual status read_handler(char* buffer, size_t size) = 0;
+    virtual ssize_t read_handler(char* buffer, size_t size) noexcept = 0;
 
     /**
      * Async operations not supported by default
      */
-    virtual status write_async_handler(const char* data, size_t size)
+    virtual bool write_async_handler(const char* data, size_t size) noexcept
     {
         UNUSED(data);
         UNUSED(size);
-        return status::ERROR_NOTIMPL;
+        return false;
     }
 
     /**
      * Async operations not supported by default
      */
-    virtual status read_async_handler(char* buffer, size_t size)
+    virtual bool read_async_handler(char* buffer, size_t size) noexcept
     {
         UNUSED(buffer);
         UNUSED(size);
-        return status::ERROR_NOTIMPL;
+        return false;
     }
 
     /**
      * Default implementation of probing as a dummy read
      */
-    virtual status probe_handler() noexcept
+    virtual bool probe_handler() noexcept
     {
         return read_handler(nullptr, 0);
     }
