@@ -45,17 +45,25 @@ static inline void yield_from_isr(bool task_woken) noexcept
 
 /**
  * FreeRTOS Task
+ * @todo Check if can remove this templating (external stack buffer)
  */
-template <size_t stack_words, typename params_t = void>
+template <size_t stack_size>
 class task {
 
 public:
-    explicit task(const char* name, size_t priority) noexcept :
-        name(name),
-        priority(priority)
+    /**
+     * @note Stack size is in words
+     */
+    constexpr explicit task(const char* name, size_t priority) noexcept :
+        task_handle (xTaskCreateStatic(
+            reinterpret_cast<void (*)(void*)>(task_thread),
+            name,
+            stack_size > configMINIMAL_STACK_SIZE ? stack_size : configMINIMAL_STACK_SIZE,
+            this,
+            priority,
+            stack_buffer,
+            &task_buffer))
     {}
-
-    virtual ~task() = default;
 
     /* Copy operations not allowed */
     task(const task&) = delete;
@@ -64,24 +72,6 @@ public:
     /* Move operations not allowed */
     task(task&&) = delete;
     task& operator=(task&&) = delete;
-
-    /**
-     * Start the task (put in ready state)
-     */
-    void start(params_t* params = nullptr) noexcept
-    {
-        this->params.instance = this;
-        this->params.params = params;
-        task_handle = xTaskCreateStatic(
-            reinterpret_cast<void (*)(void*)>(task_thread),
-            name,
-            stack_words > configMINIMAL_STACK_SIZE ? stack_words : configMINIMAL_STACK_SIZE,
-            &this->params,
-            priority,
-            stack_buffer,
-            &task_buffer
-        );
-    }
 
     /**
      * Increase task notification value and unblock task if is currently waiting
@@ -143,21 +133,13 @@ protected:
 
 private:
     /**
-     * Information for the thread about the task and user defined parameters
-     */
-    struct thread_params {
-        task* instance;
-        params_t* params;
-    };
-
-    /**
      * Actual function which is called by the scheduler which then calls the
      * appropriate task method (task::run override) to allow for instance
      * specific task threads (allows using of `this` inside task function)
      */
-    static void task_thread(thread_params* params) noexcept
+    static void task_thread(task* instance) noexcept
     {
-        params->instance->run(params->params);
+        instance->run();
     }
 
     /**
@@ -165,18 +147,14 @@ private:
      * @note Should never return
      * @todo Add [[noreturn]]
     */
-    virtual void run(params_t* params) noexcept = 0;
+    virtual void run() noexcept = 0;
 
 private:
-    StackType_t stack_buffer[stack_words];
+    StackType_t stack_buffer[stack_size];
     StaticTask_t task_buffer;
     TaskHandle_t task_handle;
-
     TickType_t delay_until_last = 0;
 
-    const char* name;
-    size_t priority;
-    thread_params params;
 };
 
 }
