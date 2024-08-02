@@ -1,4 +1,4 @@
-# emblibcpp
+# emblib
 
 C++ wrapper library for embedded development.
 
@@ -22,11 +22,33 @@ Some interfaces:
     - Accelerometer
     - Gyroscope
 
+## Adding emblib to a project
+As emblib depends on other libraries which are fetched as git submodules, the easiest way to include all of them is to clone this repository recursively into the project.
+```shell
+git clone --recursive https://github.com/terzaterza/emblibcpp.git
+```
+The library can then be included to a CMake project by adding this subdirectory, and linking the library to your target. CMake library (target) name is `emblib`.
+```cmake
+#Create emblib_config target here if needed
+
+add_subdirectory("<path-to-cloned-repo>")
+
+target_link_libraries(<project-target> PUBLIC/PRIVATE emblib)
+```
+
 ## CMake configuration
 
-### Emblibcpp
-Configuration file should be provided by creating `emblib_config` target with the include directory attached providing the `emblib_config.hpp`.
+### emblib
+Configuration header file can (should) be provided by creating `emblib_config` target, before adding the emblibcpp subdirectory, with the include directory attached to the target providing the `emblib_config.hpp`.
+```cmake
+# EMBLIB configuration
+add_library(emblib_config INTERFACE)
 
+target_include_directories(emblib_config INTERFACE
+    "<path-to-emblib_config.hpp>"
+)
+```
+If this target is not provided, a default configuration is used.
 
 ### FreeRTOS
 FreeRTOS port will be provided by default, depending on the host operating system (GCC_POSIX on Linux). This can be overriden by specifying the port by setting the `FREERTOS_PORT` in a parent CMake project.
