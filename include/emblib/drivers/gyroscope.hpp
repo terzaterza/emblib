@@ -45,6 +45,35 @@ public:
      */
     virtual bool read(math::vec3f& vec) noexcept = 0;
 
+    /**
+     * Calculate bias by finding the average of `n` readings
+     * @note Requires passing a delay function to make a pause between readings
+     * @returns true if all readings were successful and bias calculated
+     */
+    bool calculate_bias(math::vec3f& bias, size_t n, std::function<void()> read_delay) noexcept;
+
 };
+
+/**
+ * Inline implementation
+ * @todo Move to cpp file
+ */
+inline bool gyroscope::calculate_bias(math::vec3f& bias, size_t n, std::function<void()> read_delay) noexcept
+{
+    math::vec3f data;
+    bias.fill(0);
+
+    for (size_t i = 0; i < n; i++) {
+        if (!read(data)) {
+            return false;
+        }
+
+        bias += data;
+        read_delay();
+    }
+
+    bias /= static_cast<float>(n);
+    return true;
+}
 
 }

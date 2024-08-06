@@ -44,6 +44,37 @@ public:
      */
     virtual bool read(math::vec3f& vec) noexcept = 0;
 
+    /**
+     * Calculate bias by finding the average of `n` readings
+     * @note Requires passing a delay function to make a pause between readings
+     * @note Gravity vector is subtracted from the bias if provided
+     * @returns true if all readings were successful and bias calculated
+     */
+    bool calculate_bias(math::vec3f& bias, size_t n, std::function<void()> read_delay, const math::vec3f& gravity_vec = {0, 0, 0}) noexcept;
+
 };
+
+/**
+ * Inline implementation
+ * @todo Move to cpp file
+ */
+inline bool accelerometer::calculate_bias(math::vec3f& bias, size_t n, std::function<void()> read_delay, const math::vec3f& gravity_vec) noexcept
+{
+    math::vec3f data;
+    bias.fill(0);
+
+    for (size_t i = 0; i < n; i++) {
+        if (!read(data)) {
+            return false;
+        }
+
+        bias += data;
+        read_delay();
+    }
+
+    bias /= static_cast<float>(n);
+    bias -= gravity_vec;
+    return true;
+}
 
 }
