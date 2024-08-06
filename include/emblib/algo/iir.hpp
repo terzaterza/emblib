@@ -11,20 +11,20 @@ namespace emblib::algo {
 /**
  * Direct form II implementation of IIR filter
 */
-template <typename scalar_t, size_t num_dim, size_t den_dim>
+template <typename scalar_t, size_t num_dim, size_t den_dim, typename coeff_t = scalar_t>
 class iir {
 
 public:
     explicit iir(
-        const std::array<scalar_t, num_dim>& num,
-        const std::array<scalar_t, den_dim>& den
+        const std::array<coeff_t, num_dim>& num,
+        const std::array<coeff_t, den_dim>& den
     ) noexcept : num(num), den(den)
     {}
     
     /**
      * Compute next output and update the delay line
     */
-    scalar_t update(const scalar_t input) noexcept
+    scalar_t update(const scalar_t& input) noexcept
     {
         scalar_t delay_next = input;
 
@@ -53,11 +53,11 @@ public:
 
     
 private:
-    std::array<scalar_t, num_dim> num;
-    std::array<scalar_t, den_dim> den;
+    std::array<coeff_t, num_dim> num;
+    std::array<coeff_t, den_dim> den;
     etl::circular_buffer<scalar_t, etl::max(num_dim, den_dim)-1> delay_line;
 
-    scalar_t output = 0;
+    scalar_t output;
 };
 
 }
