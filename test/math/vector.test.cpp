@@ -12,3 +12,14 @@ TEST_CASE("Vector stack test", "[math][vector]")
 
     REQUIRE(c == result);
 }
+
+TEST_CASE("Subvector test", "[math][vector]")
+{
+    emblib::math::vector<float, 6> vector;
+    vector << 1, 2, 3, 4, 5, 6;
+
+    auto subvector = emblib::math::subvector<2, 5>(vector);
+    emblib::math::vec3f expected(3, 4, 5);
+
+    REQUIRE(subvector.isApprox(expected));
+}

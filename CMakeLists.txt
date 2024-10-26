@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(emblib VERSION 1.0)
@@ -40,10 +40,20 @@ set(GLM_BUILD_INSTALL OFF)
 set(GLM_ENABLE_CXX_17 ON)
 
 
+# Protobuf
+# set(ABSL_ENABLE_INSTALL ON)
+# set(protobuf_BUILD_TESTS OFF)
+# set(protobuf_ABSL_PROVIDER package)
+# LIST(APPEND CMAKE_PROGRAM_PATH "lib/abseil-cpp")
+# set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
+
+
 message(STATUS "emblib: GLM and ETL need to be built and installed, follow GitHub readmes for info")
 add_subdirectory("lib/etl")
 add_subdirectory("lib/glm")
 add_subdirectory("lib/eigen")
+# add_subdirectory("lib/abseil-cpp")
+# add_subdirectory("lib/protobuf")
 
 # Testing only if this is the top level project
 if (PROJECT_IS_TOP_LEVEL)

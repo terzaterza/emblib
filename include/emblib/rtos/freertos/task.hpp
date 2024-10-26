@@ -82,6 +82,19 @@ public:
     }
 
     /**
+     * Set task's notification value to `value` if overwrite is true or
+     * if the task's notification values is null
+     * @note Value can be retreived by task's wait_notify(&value)
+     */
+    bool notify(uint32_t value, bool overwrite = false) noexcept
+    {
+        return xTaskNotify(
+            task_handle,
+            value,
+            overwrite ? eSetValueWithOverwrite : eSetValueWithoutOverwrite) == pdTRUE;
+    }
+
+    /**
      * Increase task notification value and unblock task if is currently waiting
      * @todo Add higher priority task woken ptr as parameter
     */
@@ -124,11 +137,24 @@ protected:
      * Wait for notification
      * @note If clear is true, than this wait consumes all notifications which are given to this task
      * @returns `status::ERROR` if ticks expired before notification was received
+     * @todo Change return type to bool
     */
     status wait_notify(time::tick ticks = time::tick{portMAX_DELAY}, bool clear = false) noexcept
     {
         uint32_t count = ulTaskNotifyTake(clear, ticks.count());
         return count > 0 ? status::OK : status::ERROR;
+    }
+
+    /**
+     * Wait for notification and read the value
+     * @note Clears the notification value after the read
+     * @returns `status::ERROR` if ticks expired before notification was received
+     * @todo Change return type to bool
+    */
+    status wait_notify(uint32_t* value, time::tick ticks = time::tick{portMAX_DELAY}) noexcept
+    {
+        BaseType_t received = xTaskNotifyWait(0, 0xffffffff, value, ticks.count());
+        return received == pdTRUE ? status::OK : status::ERROR;
     }
 
 private:

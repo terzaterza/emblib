@@ -9,8 +9,10 @@
 #elif EMBLIB_MATH_USE_EIGEN
 #include "Eigen/Dense"
 #else
-#error "No current math library implementation"
+#include "custom/matrix.hpp"
 #endif
+/** @todo Add xtensor */
+
 
 namespace emblib::math {
 
@@ -21,12 +23,13 @@ using matrix = glm::mat<cols, rows, scalar_t, glm::defaultp>;
 
 #elif EMBLIB_MATH_USE_EIGEN
 
-template <typename scalar_t, size_t rows, size_t cols = rows>
+template <typename scalar_t, size_t rows, size_t cols>
 using matrix = Eigen::Matrix<scalar_t, rows, cols>;
 
 #else
 
-#error "Matrix implementation not defined"
+template <typename scalar_t, size_t rows, size_t cols>
+using matrix = custom::matrix<scalar_t, rows, cols>;
 
 #endif
 
@@ -58,10 +61,17 @@ constexpr matrix<scalar_t, dim, dim> diagonal(const std::array<scalar_t, dim>& v
 }
 
 
+template <size_t rlow, size_t rhigh, size_t clow, size_t chigh, typename derived>
+static auto submatrix(const Eigen::MatrixBase<derived>& m)
+{
+    return m.template block<rhigh-rlow, chigh-clow>(rlow, clow);
+}
+
+
 template <typename scalar_t, size_t rows, size_t cols>
 constexpr matrix<scalar_t, rows, cols> matrix_divide_left(
-    const matrix<scalar_t, rows, cols>& dividend,
-    const matrix<scalar_t, cols, cols>& divisor) noexcept
+    const matrix<scalar_t, cols, cols>& divisor,
+    const matrix<scalar_t, rows, cols>& dividend) noexcept
 {
 
 #if EMBLIB_MATH_USE_GLM

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/status.hpp"
 #include "emblib/common/time.hpp"
 
 #include "FreeRTOS.h"
@@ -30,28 +29,49 @@ public:
     /**
      * Queue send
      */
-    status send(const item_t& item, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
+    bool send(const item_t& item, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
     {
-        BaseType_t ret_status = xQueueSend(queue_handle, &item, ticks_wait.count());
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xQueueSend(queue_handle, &item, ticks_wait.count()) == pdTRUE;
+    }
+
+    /**
+     * Queue send overwrite
+     * @todo Should merge into send(const item_t& item, bool overwrite = false, time::tick ...);
+     */
+    bool send_overwrite(const item_t& item) noexcept
+    {
+        static_assert(capacity == 1); /* Required by FreeRTOS */
+        return xQueueOverwrite(queue_handle, &item) == pdTRUE;
     }
 
     /**
      * Queue send from ISR
      */
-    status send_from_isr(const item_t& item, BaseType_t* high_prio_task_woken = 0) noexcept
+    bool send_from_isr(const item_t& item, bool* task_woken = nullptr) noexcept
     {
-        BaseType_t ret_status = xQueueSendFromISR(queue_handle, &item, high_prio_task_woken);
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        BaseType_t task_woken_base = pdFALSE;
+        bool ret_status = xQueueSendFromISR(queue_handle, &item, &task_woken_base) == pdTRUE;
+
+        if (task_woken) {
+            *task_woken = task_woken_base == pdTRUE;
+        }
+        return ret_status;
     }
 
     /**
      * Receive item from queue
      */
-    status receive(item_t* buffer, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
+    bool receive(item_t* buffer, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
     {
-        BaseType_t ret_status = xQueueReceive(queue_handle, buffer, ticks_wait.count());
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xQueueReceive(queue_handle, buffer, ticks_wait.count()) == pdTRUE;
+    }
+
+    /**
+     * Receive item from queue without deleting it
+     */
+    bool peek(item_t* buffer, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
+    {
+        return xQueuePeek(queue_handle, buffer, ticks_wait.count()) == pdTRUE;
     }
 
 private:
