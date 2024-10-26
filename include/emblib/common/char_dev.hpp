@@ -7,7 +7,7 @@
 #include "etl/string.h"
 #endif
 
-namespace emblib::drivers {
+namespace emblib {
 
 /**
  * Base class for all objects which want to provide an interface
