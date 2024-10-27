@@ -1,14 +1,14 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/drivers/serial_device.hpp"
+#include "emblib/common/char_dev.hpp"
 
 #include "etl/string.h"
 #include "etl/to_string.h"
 
-namespace emblib::log {
+namespace emblib {
 
-enum class log_level {
+enum class log_level_e {
     DEBUG = 0,
     INFO,
     WARNING,
@@ -21,14 +21,54 @@ public:
     /**
      * Default constructor
      */
-    explicit logger(drivers::serial_device* log_device = nullptr, bool async = false) noexcept
-        : log_device(log_device), async(async) {}
+    explicit logger(char_dev* log_device = nullptr, bool async = false) noexcept
+        : m_log_device(log_device), m_msg_level(log_level_e::INFO) {}
+
+    /**
+     * Writes the current buffer to the output device and clears the buffer
+     * 
+     * @note Log buffer will be flushed if the character array ends
+     * with `\\n` or if this method is explicitly called
+    */
+    void flush() noexcept;
+
+    /**
+     * Set output logging device
+     * @note Flushes the buffer if not it's empty and an output device already exists
+     */
+    void set_output_device(char_dev& device) noexcept
+    {
+        if (!m_buffer.empty() && m_log_device != nullptr) {
+            flush();
+        }
+        
+        m_log_device = &device;
+    }
+
+    /**
+     * Set the minimum logging level
+    */
+    void set_output_level(log_level_e level) noexcept
+    {
+        if (m_msg_level < level) {
+            m_buffer.clear();
+        }
+        
+        m_output_level = level;
+    }
 
     /**
      * Set the log level for the following messages
      * @note If there is data in the buffer, this will flush it
     */
-    logger& operator<<(log_level level);
+    logger& operator<<(log_level_e level)
+    {
+        if (!m_buffer.empty()) {
+            flush();
+        }
+        m_msg_level = level;
+        return *this;
+    }
     
     /**
      * Write generic data to the logger
@@ -49,10 +89,10 @@ public:
      * Write const char array to the logger
      * @note Log flush will only be triggered if data ends with `\\n`
     */
-    template <size_t n>
-    logger& operator<<(const char (&data)[n])
+    template <size_t N>
+    logger& operator<<(const char (&data)[N])
     {
-        buffer.append(data, n-1);
+        buffer.append(data, N-1);
 
         if (buffer.size() == buffer.max_size() || buffer.back() == '\n') {
             flush();
@@ -60,55 +100,50 @@ public:
         return *this;
     }
 
-    /**
-     * Writes the current buffer to the serial devices and clears the buffer
-     * 
-     * @note Log buffer will be flushed if the character array ends
-     * with `\\n` or if this method is explicitly called
-    */
-    void flush() noexcept;
-
-    /**
-     * Set the global logging level
-    */
-    static void set_global_level(log_level level) noexcept
-    {
-        logger::global_output_level = level;
-    }
-
-    /**
-     * Set output serial device
-     * @note Flushes the buffer if not it's empty and an output device already exists
-     */
-    void set_output_device(drivers::serial_device& device) noexcept;
-
 private:
     /**
      * Determines which messages will be outputed during runtime
     */
-    static log_level global_output_level;
+    log_level_e m_output_level;
 
     /**
-     * All messages with `msg_level` >= `logger::global_output_level` will be output during runtime
+     * All messages with msg level >= output level will be output during runtime
      * @note Can only be set via << operator
     */
-    log_level msg_level = log_level::INFO;
+    log_level_e m_msg_level;
     
     /**
-     * Serial device for writing the log data
+     * Device for writing the log data
     */
-    drivers::serial_device* log_device;
+    char_dev* m_log_device;
 
     /**
      * Data buffer
     */
-    etl::string<LOGGER_BUFFER_SIZE> buffer;
-
-    /**
-     * Write to log device in async mode if available
-     */
-    bool async;
+    etl::string<LOGGER_BUFFER_SIZE> m_buffer;
 
 };
+
+/* Convinience functions */
+
+static inline logger& logger_debug(logger& logger) noexcept
+{
+    return logger << log_level_e::DEBUG;
+}
+
+static inline logger& logger_info(logger& logger) noexcept
+{
+    return logger << log_level_e::INFO;
+}
+
+static inline logger& logger_warning(logger& logger) noexcept
+{
+    return logger << log_level_e::WARNING;
+}
+
+static inline logger& logger_error(logger& logger) noexcept
+{
+    return logger << log_level_e::ERROR;
+}
 
 }
