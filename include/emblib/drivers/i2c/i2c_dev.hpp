@@ -6,6 +6,10 @@
 
 namespace emblib::drivers {
 
+/**
+ * I2C Device
+ * @todo Can be final
+ */
 class i2c_dev : public char_dev {
 
 public:

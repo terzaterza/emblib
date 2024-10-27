@@ -20,4 +20,9 @@ namespace emblib {
  */
 static constexpr size_t LOGGER_BUFFER_SIZE = 64;
 
+/**
+ * Capacity for the output channel wrapper class vector
+ */
+static constexpr size_t I2C_MUX_MAX_CHANNELS = 8;
+
 }
