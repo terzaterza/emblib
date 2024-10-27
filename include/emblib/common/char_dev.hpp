@@ -15,10 +15,10 @@ namespace emblib {
  */
 class char_dev {
 
-/* Class private typedef of callback functions for async operations */
-using callback_t = std::function<void(ssize_t)>;
-
 public:
+    /* Typedef of callback functions for async operations */
+    using callback_t = std::function<void(ssize_t)>;
+
     explicit char_dev() = default;
     virtual ~char_dev() = default;
 
@@ -67,7 +67,7 @@ public:
     }
 
     /**
-     * @return `true` if current serial device supports async operations
+     * @return `true` if this char device supports async operations
      */
     virtual bool is_async_available() noexcept
     {
