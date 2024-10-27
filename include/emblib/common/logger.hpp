@@ -21,7 +21,7 @@ public:
     /**
      * Default constructor
      */
-    explicit logger(char_dev* log_device = nullptr, bool async = false) noexcept
+    explicit logger(char_dev* log_device = nullptr) noexcept
         : m_log_device(log_device), m_msg_level(log_level_e::INFO) {}
 
     /**
