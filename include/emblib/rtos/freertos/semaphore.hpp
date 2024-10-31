@@ -8,26 +8,39 @@
 
 namespace emblib::rtos::freertos {
 
-class mutex {
+enum class semaphore_type_e {
+    BINARY,
+    COUNTING,
+    MUTEX
+};
+
+class semaphore {
 
 public:
-    explicit mutex() noexcept :
-        m_semaphore_handle(xSemaphoreCreateMutexStatic(&m_semaphore_buffer))
-    {}
+    explicit semaphore(semaphore_type_e type, size_t max_count = UINT32_MAX, size_t initial_count = 0) noexcept
+    {
+        if (type == semaphore_type_e::BINARY) {
+            m_semaphore_handle = xSemaphoreCreateBinaryStatic(&m_semaphore_buffer);
+        } else if (type == semaphore_type_e::COUNTING) {
+            m_semaphore_handle = xSemaphoreCreateCountingStatic(max_count, initial_count, &m_semaphore_buffer);
+        } else {
+            m_semaphore_handle = xSemaphoreCreateMutexStatic(&m_semaphore_buffer);
+        }
+    }
 
-    /** @todo Can add non virtual destructors for task, mutex, queue which
+    /** @todo Can add non virtual destructors for task, semaphore, queue which
      * delete the corresponding handle object */
 
     /* Copy operations not allowed */
-    mutex(const mutex&) = delete;
-    mutex& operator=(const mutex&) = delete;
+    semaphore(const semaphore&) = delete;
+    semaphore& operator=(const semaphore&) = delete;
 
     /* Move operations not allowed */
-    mutex(mutex&&) = delete;
-    mutex& operator=(mutex&&) = delete;
+    semaphore(semaphore&&) = delete;
+    semaphore& operator=(semaphore&&) = delete;
 
     /**
-     * Mutex take
+     * Semaphore take
      * @todo Can add checking if the scheduler has started and returning
      * `true` if not since that means there can be only 1 thread running
     */
@@ -37,7 +50,7 @@ public:
     }
 
     /**
-     * Mutex give
+     * Semaphore give
      * @todo Similar to `take`, can return true if scheduler not started
     */
     bool give() noexcept
@@ -46,7 +59,7 @@ public:
     }
 
     /**
-     * Mutex give from interrupt routine
+     * Semaphore give from interrupt routine
      * @note Use this to make sure that task which was
      * interrupted does not block accidentally
      * @todo Can add higher prio task woken
@@ -59,6 +72,16 @@ public:
 private:
     StaticSemaphore_t m_semaphore_buffer;
     SemaphoreHandle_t m_semaphore_handle;
+
+};
+
+
+class mutex : public semaphore {
+
+public:
+    explicit mutex() noexcept :
+        semaphore(semaphore_type_e::MUTEX)
+    {}
 
 };
 
