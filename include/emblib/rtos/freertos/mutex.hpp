@@ -1,9 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/status.hpp"
 #include "emblib/common/time.hpp"
-#include "emblib/rtos/freertos/task.hpp"
 
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -14,10 +12,11 @@ class mutex {
 
 public:
     explicit mutex() noexcept :
-        semaphore_handle(xSemaphoreCreateMutexStatic(&semaphore_buffer))
+        m_semaphore_handle(xSemaphoreCreateMutexStatic(&m_semaphore_buffer))
     {}
 
-    virtual ~mutex() = default;
+    /** @todo Can add non virtual destructors for task, mutex, queue which
+     * delete the corresponding handle object */
 
     /* Copy operations not allowed */
     mutex(const mutex&) = delete;
@@ -29,39 +28,37 @@ public:
 
     /**
      * Mutex take
-     * @note If the scheduler is not yet started, this returns `status::OK`
-     * without modifying the mutex since it is assumed there will be no
-     * preemption until the scheduler starts
+     * @todo Can add checking if the scheduler has started and returning
+     * `true` if not since that means there can be only 1 thread running
     */
-    status lock(time::tick ticks = time::tick{portMAX_DELAY}) noexcept
+    bool take(time::tick ticks) noexcept
     {
-        if (get_scheduler_state() == scheduler_state::NOT_STARTED) {
-            return status::OK;
-        }
-
-        BaseType_t ret_status = xSemaphoreTake(semaphore_handle, ticks.count());
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xSemaphoreTake(m_semaphore_handle, ticks.count()) == pdTRUE;
     }
 
     /**
      * Mutex give
-     * @note If the scheduler is not yet started, this returns `status::OK`
-     * without modifying the mutex since it is assumed there will be no
-     * preemption until the scheduler starts
+     * @todo Similar to `take`, can return true if scheduler not started
     */
-    status unlock() noexcept
+    bool give() noexcept
     {
-        if (get_scheduler_state() == scheduler_state::NOT_STARTED) {
-            return status::OK;
-        }
-        
-        BaseType_t ret_status = xSemaphoreGive(semaphore_handle);
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xSemaphoreGive(m_semaphore_handle) == pdTRUE;
+    }
+
+    /**
+     * Mutex give from interrupt routine
+     * @note Use this to make sure that task which was
+     * interrupted does not block accidentally
+     * @todo Can add higher prio task woken
+     */
+    bool give_from_isr() noexcept
+    {
+        return xSemaphoreGiveFromISR(m_semaphore_handle, NULL) == pdTRUE;
     }
 
 private:
-    StaticSemaphore_t semaphore_buffer;
-    SemaphoreHandle_t semaphore_handle;
+    StaticSemaphore_t m_semaphore_buffer;
+    SemaphoreHandle_t m_semaphore_handle;
 
 };
 
