@@ -1,21 +1,23 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/status.hpp"
 #include "emblib/common/time.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "portmacrocommon.h"
+
+#include <functional>
 
 namespace emblib::rtos::freertos {
 
 /**
  * Possible FreeRTOS scheduler states
  */
-enum class scheduler_state {
-    SUSPENDED   = 0,
-    NOT_STARTED = 1,
-    RUNNING     = 2,
+enum class scheduler_state_e {
+    SUSPENDED   = taskSCHEDULER_SUSPENDED,
+    NOT_STARTED = taskSCHEDULER_NOT_STARTED,
+    RUNNING     = taskSCHEDULER_RUNNING,
 };
 
 /**
@@ -29,9 +31,9 @@ static inline void start_scheduler() noexcept
 /**
  * Return the scheduler state
  */
-static inline scheduler_state get_scheduler_state()
+static inline scheduler_state_e get_scheduler_state() noexcept
 {
-    return static_cast<scheduler_state>(xTaskGetSchedulerState());
+    return static_cast<scheduler_state_e>(xTaskGetSchedulerState());
 }
 
 /**
@@ -39,30 +41,54 @@ static inline scheduler_state get_scheduler_state()
  */
 static inline void yield_from_isr(bool task_woken) noexcept
 {
-    BaseType_t task_woken_base_type = task_woken ? pdTRUE : pdFALSE;
-    portYIELD_FROM_ISR(task_woken_base_type);
+    portYIELD_FROM_ISR(task_woken);
 }
 
 /**
- * FreeRTOS Task
- * @todo Check if can remove this templating (external stack buffer)
+ * Delay the current task
+ * @todo Can move to namespace this_task (this_thread)
  */
-template <size_t stack_size>
+static inline void delay(time::tick ticks) noexcept
+{
+    vTaskDelay(ticks.count());
+}
+
+static inline uint32_t notify_take(bool clear_count, time::tick ticks) noexcept
+{
+    return ulTaskNotifyTake(clear_count, ticks.count());
+}
+
+/**
+ * Stack buffer for a FreeRTOS task, where `SIZE` is the
+ * number of words for the allocation
+ * @todo Can move this inside task class and rename to "stack"
+ */
+template <size_t SIZE>
+using task_stack = StackType_t[SIZE];
+
+/**
+ * FreeRTOS Task
+ */
 class task {
 
 public:
-    /**
-     * @note Stack size is in words
-     */
-    constexpr explicit task(const char* name, size_t priority) noexcept :
-        task_handle (xTaskCreateStatic(
-            reinterpret_cast<void (*)(void*)>(task_thread),
+    template <size_t STACK_SIZE>
+    explicit task(
+        std::function<void ()> task_func,
+        const char* name,
+        size_t priority,
+        task_stack<STACK_SIZE>& stack
+    ) :
+        m_task_func(task_func),
+        m_task_handle(xTaskCreateStatic(
+            task_entry,
             name,
-            stack_size > configMINIMAL_STACK_SIZE ? stack_size : configMINIMAL_STACK_SIZE,
+            STACK_SIZE,
             this,
             priority,
-            stack_buffer,
-            &task_buffer))
+            stack,
+            m_task_buffer
+        ))
     {}
 
     /* Copy operations not allowed */
@@ -74,87 +100,42 @@ public:
     task& operator=(task&&) = delete;
 
     /**
-     * Increase task notification value and unblock task if is currently waiting
-    */
+     * Increment task's notification value (works like a counting semaphore)
+     */
     void notify() noexcept
     {
-        xTaskNotifyGive(task_handle);
+        xTaskNotifyGive(m_task_handle);
     }
 
     /**
-     * Increase task notification value and unblock task if is currently waiting
-     * @todo Add higher priority task woken ptr as parameter
-    */
-    void notify_from_isr(bool* task_woken = nullptr) noexcept
-    {
-        BaseType_t task_woken_bt = pdFALSE;
-        vTaskNotifyGiveFromISR(task_handle, &task_woken_bt);
-
-        if (task_woken) {
-            *task_woken = task_woken_bt == pdTRUE;
-        }
-    }
-
-protected:
-    /**
-     * Delay currently running task
+     * Increment task's notification value
+     * @todo Add argument for higher priority task woken
      */
-    void delay(time::tick ticks) noexcept
+    void notify_from_isr() noexcept
     {
-        vTaskDelay(ticks.count());
-    }
-
-    /**
-     * Task will resume after `ticks` since the last time this function was called
-     * @returns `true` if the task execution was delayed, else `false`
-    */
-    bool delay_until(time::tick ticks) noexcept
-    {
-        if (this->delay_until_last == 0) {
-            this->delay_until_last = xTaskGetTickCount();
-        }
-
-        // BaseType_t was_delayed = xTaskDelayUntil(&this->delay_until_last, ticks.count());
-        // return was_delayed == pdTRUE;
-        vTaskDelayUntil(&this->delay_until_last, ticks.count());
-        return true;
-    }
-
-    /**
-     * Wait for notification
-     * @note If clear is true, than this wait consumes all notifications which are given to this task
-     * @returns `status::ERROR` if ticks expired before notification was received
-    */
-    status wait_notify(time::tick ticks = time::tick{portMAX_DELAY}, bool clear = false) noexcept
-    {
-        uint32_t count = ulTaskNotifyTake(clear, ticks.count());
-        return count > 0 ? status::OK : status::ERROR;
+        vTaskNotifyGiveFromISR(m_task_handle, NULL);
     }
 
 private:
     /**
      * Actual function which is called by the scheduler which then calls the
-     * appropriate task method (task::run override) to allow for instance
-     * specific task threads (allows using of `this` inside task function)
+     * appropriate cpp style task function to allow for passing contexts to
+     * the thread using std::function
      */
-    static void task_thread(task* instance) noexcept
+    static void task_entry(task* instance) noexcept
     {
-        instance->run();
+        instance->m_task_func();
+
+        /* If the function ever exits, remove this task */
+        vTaskDelete(instance->m_task_handle);
     }
 
-    /**
-     * Task function
-     * @note Should never return
-     * @todo Add [[noreturn]]
-    */
-    virtual void run() noexcept = 0;
-
 private:
-    StackType_t stack_buffer[stack_size];
-    StaticTask_t task_buffer;
-    TaskHandle_t task_handle;
-    TickType_t delay_until_last = 0;
-
+    std::function<void ()> m_task_func;
+    
+    StaticTask_t m_task_buffer;
+    TaskHandle_t m_task_handle;
+    // TickType_t m_delay_until_last = 0;
 };
 
 }
