@@ -1,7 +1,6 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/status.hpp"
 #include "emblib/common/time.hpp"
 
 #include "FreeRTOS.h"
@@ -9,15 +8,13 @@
 
 namespace emblib::rtos::freertos {
 
-template <typename item_t, size_t capacity>
+template <typename item_type, size_t CAPACITY>
 class queue {
 
 public:
     explicit queue() noexcept :
-        queue_handle(xQueueCreateStatic(capacity, sizeof(item_t), storage, &queue_buffer))
+        m_queue_handle(xQueueCreateStatic(CAPACITY, sizeof(item_type), m_storage, &m_queue_buffer))
     {}
-
-    virtual ~queue() = default;
 
     /* Copy operations not allowed */
     queue(const queue&) = delete;
@@ -29,36 +26,34 @@ public:
 
     /**
      * Queue send
+     * @todo Rename `ticks` to `timeout`
      */
-    status send(const item_t& item, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
+    bool send(const item_type& item, time::tick ticks) noexcept
     {
-        BaseType_t ret_status = xQueueSend(queue_handle, &item, ticks_wait.count());
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xQueueSend(m_queue_handle, &item, ticks_wait.count()) == pdTRUE;
     }
 
     /**
      * Queue send from ISR
      */
-    status send_from_isr(const item_t& item, BaseType_t* high_prio_task_woken = 0) noexcept
+    bool send_from_isr(const item_type& item) noexcept
     {
-        BaseType_t ret_status = xQueueSendFromISR(queue_handle, &item, high_prio_task_woken);
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xQueueSendFromISR(m_queue_handle, &item, NULL) == pdTRUE;
     }
 
     /**
      * Receive item from queue
      */
-    status receive(item_t* buffer, time::tick ticks_wait = time::tick{portMAX_DELAY}) noexcept
+    bool receive(item_type& buffer, time::tick ticks) noexcept
     {
-        BaseType_t ret_status = xQueueReceive(queue_handle, buffer, ticks_wait.count());
-        return ret_status == pdTRUE ? status::OK : status::ERROR;
+        return xQueueReceive(m_queue_handle, &buffer, ticks.count()) == pdTRUE;
     }
 
 private:
-    QueueHandle_t queue_handle;
-    StaticQueue_t queue_buffer;
+    QueueHandle_t m_queue_handle;
+    StaticQueue_t m_queue_buffer;
 
-    uint8_t storage[capacity * sizeof(item_t)];
+    uint8_t m_storage[CAPACITY * sizeof(item_type)];
 
 };
 
