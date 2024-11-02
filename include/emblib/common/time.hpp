@@ -32,4 +32,7 @@ typedef millisec tick;
 
 #endif
 
+static constexpr millisec MAX_MILLIS = millisec(-1);
+static constexpr tick MAX_TICKS = tick(-1);
+
 }
