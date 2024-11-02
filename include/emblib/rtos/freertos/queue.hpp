@@ -26,11 +26,10 @@ public:
 
     /**
      * Queue send
-     * @todo Rename `ticks` to `timeout`
      */
-    bool send(const item_type& item, time::tick ticks) noexcept
+    bool send(const item_type& item, time::tick timeout) noexcept
     {
-        return xQueueSend(m_queue_handle, &item, ticks_wait.count()) == pdTRUE;
+        return xQueueSend(m_queue_handle, &item, timeout.count()) == pdTRUE;
     }
 
     /**
@@ -44,9 +43,17 @@ public:
     /**
      * Receive item from queue
      */
-    bool receive(item_type& buffer, time::tick ticks) noexcept
+    bool receive(item_type& buffer, time::tick timeout) noexcept
     {
-        return xQueueReceive(m_queue_handle, &buffer, ticks.count()) == pdTRUE;
+        return xQueueReceive(m_queue_handle, &buffer, timeout.count()) == pdTRUE;
+    }
+
+    /**
+     * Peek queue
+     */
+    bool peek(item_type& buffer, time::tick timeout) noexcept
+    {
+        return xQueuePeek(m_queue_handle, &buffer, timeout.count()) == pdTRUE;
     }
 
 private:
