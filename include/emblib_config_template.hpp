@@ -15,6 +15,8 @@
 
 namespace emblib {
 
+using size_t = unsigned;
+
 /**
  * Logger buffer size
  */

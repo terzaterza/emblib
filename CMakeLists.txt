@@ -54,8 +54,7 @@ endif()
 
 # Create the library target with all the source files
 add_library(emblib STATIC
-    src/common/log.cpp
-    src/drivers/serial_device.cpp
+    src/main.cpp
 )
 
 # Add include folders
