@@ -5,7 +5,6 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include "portmacrocommon.h"
 
 #include <functional>
 
@@ -63,8 +62,8 @@ static inline uint32_t notify_take(bool clear_count, time::tick ticks) noexcept
  * number of words for the allocation
  * @todo Can move this inside task class and rename to "stack"
  */
-template <size_t SIZE>
-using task_stack = StackType_t[SIZE];
+template <size_t SIZE_WORDS>
+using task_stack_t = StackType_t[SIZE_WORDS];
 
 /**
  * FreeRTOS Task
@@ -77,7 +76,7 @@ public:
         std::function<void ()> task_func,
         const char* name,
         size_t priority,
-        task_stack<STACK_SIZE>& stack
+        task_stack_t<STACK_SIZE>& stack
     ) :
         m_task_func(task_func),
         m_task_handle(xTaskCreateStatic(

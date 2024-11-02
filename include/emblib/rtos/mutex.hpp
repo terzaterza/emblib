@@ -12,9 +12,6 @@
 
 namespace emblib::rtos {
 
-/* Implementation defined native handle */
-typedef native_mutex_t;
-
 /**
  * Mutex
  * @note Can be used with std guards and locks
@@ -22,6 +19,12 @@ typedef native_mutex_t;
 class mutex {
 
 public:
+#if EMBLIB_RTOS_USE_FREERTOS
+    using native_mutex_t = freertos::mutex;
+#else
+    #error "Thread implementation missing"
+#endif
+
     explicit mutex() = default;
 
     /* Copy operations not allowed */
@@ -61,8 +64,6 @@ private:
 
 
 #if EMBLIB_RTOS_USE_FREERTOS
-
-using native_mutex_t = freertos::mutex;
 
 inline bool mutex::lock(time::millisec timeout) noexcept
 {

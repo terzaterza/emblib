@@ -23,7 +23,6 @@ namespace this_thread {
  */
 static void sleep(time::millisec duration) noexcept;
 
-
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
 /**
  * Wait for this thread to get notified
@@ -41,10 +40,11 @@ static bool wait_notification(time::millisec timeout) noexcept;
 static void start_threads() noexcept;
 
 
-/* Native (implementation based) type for underlying thread object */
-// class native_thread_t;
-// template <size_t SIZE>
-// class native_stack_t;
+/**
+ * Statically allocated stack
+ */
+template <size_t SIZE_IN_BYTES>
+using thread_stack_t = uint8_t[SIZE_IN_BYTES];
 
 /**
  * Thread abstraction
@@ -52,12 +52,18 @@ static void start_threads() noexcept;
 class thread {
 
 public:
-    template <size_t STACK_SIZE>
+#if EMBLIB_RTOS_USE_FREERTOS
+    using native_thread_t = freertos::task;
+#else
+    #error "Thread implementation missing"
+#endif
+
+    template <size_t STACK_SIZE_BYTES>
     explicit thread(
         std::function<void ()> thread_func,
         const char* name,
         size_t priority,
-        native_stack_t<STACK_SIZE>& stack
+        thread_stack_t<STACK_SIZE_BYTES>& stack
     );
 
     /* Copy operations not allowed */
@@ -90,6 +96,7 @@ private:
 
 };
 
+
 /**
  * Implementation of thread functionality using FreeRTOS
  */
@@ -117,20 +124,19 @@ static void start_threads() noexcept
     freertos::start_scheduler();
 }
 
-
-using native_thread_t = freertos::task;
-template <size_t SIZE>
-using native_stack_t = freertos::task_stack<SIZE>;
-
-template <size_t STACK_SIZE>
-inline thread::thread(
+template <size_t STACK_SIZE_BYTES>
+thread::thread(
     std::function<void ()> thread_func,
     const char* name,
     size_t priority,
-    native_stack_t<STACK_SIZE>& stack) :
-    m_native_thread(thread_func, name, priority, stack)
-{
-}
+    thread_stack_t<STACK_SIZE_BYTES>& stack
+) :
+    m_native_thread(
+        thread_func,
+        name,
+        priority,
+        static_cast<freertos::task_stack_t<STACK_SIZE_BYTES / sizeof(freertos::task_stack_t<1>)>>(stack))
+{}
 
 #else
 #error "Missing implementation of rtos::thread"
