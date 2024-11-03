@@ -1,14 +1,14 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/math/vector.hpp"
 
 #if EMBLIB_MATH_USE_GLM
-#include "glm/matrix.hpp"
+    #include "glm/matrix.hpp"
 #elif EMBLIB_MATH_USE_EIGEN
-#include "Eigen/Geometry"
+    #define EIGEN_QUATERNION_PLUGIN "emblib/math/eigen/quaternion_plugin.hpp"
+    #include "Eigen/Geometry"
 #else
-#error "No current math library implementation"
+    #error "No current math library implementation"
 #endif
 
 namespace emblib::math {
@@ -22,8 +22,8 @@ using glm::all;
 
 #elif EMBLIB_MATH_USE_EIGEN
 
-template <typename scalar_t>
-using quaternion = Eigen::Quaternion<scalar_t>;
+template <typename scalar_type>
+using quaternion = Eigen::Quaternion<scalar_type>;
 
 #else
 
@@ -31,12 +31,7 @@ using quaternion = Eigen::Quaternion<scalar_t>;
 
 #endif
 
-using quaternionf = quaternion<float>;
 
-template <typename scalar_t>
-vector<scalar_t, 3> quaternion_rotate(const quaternion<scalar_t>& q, const vector<scalar_t, 3>& v) noexcept
-{
-    return q._transformVector(v);
-}
+using quaternionf = quaternion<float>;
 
 }
