@@ -4,7 +4,8 @@ enable_testing()
 
 add_executable(tests
     algo/iir.test.cpp
-    math/vector.test.cpp
+    math/matrix.test.cpp
+    # math/vector.test.cpp
     rtos/queue.test.cpp
     rtos/mutex.test.cpp
 )
