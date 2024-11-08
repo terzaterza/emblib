@@ -23,7 +23,7 @@ template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator+(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
-    auto res = m_base + rhs.m_base;
+    auto res = m_base + rhs.get_base();
     return matrix_same_t<decltype(res)>(res);
 }
 
@@ -31,7 +31,7 @@ template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator-(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
-    auto res = m_base - rhs.m_base;
+    auto res = m_base - rhs.get_base();
     return matrix_same_t<decltype(res)>(res);
 }
 
@@ -39,7 +39,7 @@ template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
-    auto res = m_base.cwiseProduct(rhs.m_base);
+    auto res = (m_base.array() * rhs.get_base().array()).matrix();
     return matrix_same_t<decltype(res)>(res);
 }
 
@@ -47,15 +47,74 @@ template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
-    auto res = (m_base.array() / rhs.m_base.array()).matrix();
+    auto res = (m_base.array() / rhs.get_base().array()).matrix();
     return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator<(const matrix_same_t<rhs_base> &rhs) const noexcept
+{
+    auto res = (m_base.array() < rhs.get_base().array()).matrix();
+    return matrix_bool_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator<=(const matrix_same_t<rhs_base> &rhs) const noexcept
+{
+    auto res = (m_base.array() <= rhs.get_base().array()).matrix();
+    return matrix_bool_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator==(const matrix_same_t<rhs_base> &rhs) const noexcept
+{
+    auto res = (m_base.array() == rhs.get_base().array()).matrix();
+    return matrix_bool_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator&&(const matrix_same_t<rhs_base> &rhs) const noexcept
+{
+    auto res = (m_base.array() && rhs.get_base().array()).matrix();
+    return matrix_bool_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator||(const matrix_same_t<rhs_base> &rhs) const noexcept
+{
+    auto res = (m_base.array() || rhs.get_base().array()).matrix();
+    return matrix_bool_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator!() const noexcept
+{
+    auto res = (!m_base.array()).matrix();
+    return matrix_bool_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline bool matrix<scalar_type, ROWS, COLS, base_type>::all() const noexcept
+{
+    return m_base.all();
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline bool matrix<scalar_type, ROWS, COLS, base_type>::any() const noexcept
+{
+    return m_base.any();
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <size_t COLS_RHS, typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::matmul(const matrix<scalar_type, COLS, COLS_RHS, rhs_base> &rhs) const noexcept
 {
-    auto res = m_base * rhs.m_base;
+    auto res = m_base * rhs.get_base();
     return matrix<scalar_type, ROWS, COLS_RHS, decltype(res)>(res);
 }
 
@@ -65,4 +124,11 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::matdivl(const matrix<sca
 {
     Eigen::Matrix<scalar_type, ROWS, COLS> res = divisor.get_base().colPivHouseholderQr().solve(m_base);
     return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename cast_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::cast_base() const noexcept
+{
+    return m_base.template cast<cast_type>();
 }

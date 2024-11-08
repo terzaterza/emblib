@@ -45,6 +45,8 @@ public:
     using matrix_same_t = matrix<scalar_type, ROWS, COLS, other_base>;
     template <typename other_scalar, typename other_base>
     using matrix_shaped_t = matrix<other_scalar, ROWS, COLS, other_base>;
+    template <typename other_base>
+    using matrix_bool_t = matrix<bool, ROWS, COLS, other_base>;
 
     /**
      * Base constructor for creating this wrapper from implementation types
@@ -77,6 +79,24 @@ public:
     }
 
     /**
+     * Cast to a different scalar type
+     */
+    template <typename cast_type>
+    auto cast() const noexcept
+    {
+        auto casted_base = cast_base<cast_type>();
+        return matrix<cast_type, ROWS, COLS, decltype(casted_base)>(casted_base);
+    }
+
+    /**
+     * Get element
+     */
+    scalar_type operator()(size_t row, size_t col) const noexcept
+    {
+        return m_base(row, col);
+    }
+
+    /**
      * Transpose
      */
     auto transpose() const noexcept;
@@ -106,6 +126,51 @@ public:
     auto operator/(const matrix_same_t<rhs_base>& rhs) const noexcept;
 
     /**
+     * Element-wise less than
+     */
+    template <typename rhs_base>
+    auto operator<(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise less than or equal to
+     */
+    template <typename rhs_base>
+    auto operator<=(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise equal
+     */
+    template <typename rhs_base>
+    auto operator==(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise logical and
+     */
+    template <typename rhs_base>
+    auto operator&&(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise logical or
+     */
+    template <typename rhs_base>
+    auto operator||(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise logical not
+     */
+    auto operator!() const noexcept;
+
+    /**
+     * Are all elements non-null
+     */
+    bool all() const noexcept;
+
+    /**
+     * Are any elements non-null
+     */
+    bool any() const noexcept;
+
+    /**
      * Matrix multiplication
      */
     template <size_t COLS_RHS, typename rhs_base>
@@ -125,6 +190,10 @@ public:
     {
         return matrix<scalar_type, ROWS, COLS>(transpose().matdivl(divisor.transpose()).transpose());
     }
+
+private:
+    template <typename cast_type>
+    auto cast_base() const noexcept;
 
 private:
     base_type m_base;
