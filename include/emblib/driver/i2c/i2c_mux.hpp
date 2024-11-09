@@ -4,7 +4,7 @@
 #include "etl/vector.h"
 #include "./i2c_master.hpp"
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 /**
  * @note Can also extends i2c_master to allow i2c master

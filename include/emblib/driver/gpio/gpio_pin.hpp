@@ -2,7 +2,7 @@
 
 #include "emblib/emblib.hpp"
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 class gpio_pin {
 

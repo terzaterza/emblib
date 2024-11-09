@@ -3,7 +3,7 @@
 #include "emblib/emblib.hpp"
 #include "emblib/drivers/serial_device.hpp"
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 class uart : public serial_device {
 

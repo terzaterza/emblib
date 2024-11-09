@@ -4,7 +4,7 @@
 #include "emblib/common/status.hpp"
 #include "emblib/math/vector.hpp"
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 class accelerometer {
 

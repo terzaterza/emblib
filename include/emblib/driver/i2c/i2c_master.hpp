@@ -3,7 +3,7 @@
 #include "emblib/emblib.hpp"
 #include <functional>
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 /**
  * @todo If needed replace this with a class i2c_address which

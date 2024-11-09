@@ -4,7 +4,7 @@
 #include "emblib/common/char_dev.hpp"
 #include "./i2c_master.hpp"
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 /**
  * I2C Device

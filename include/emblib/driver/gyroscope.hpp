@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace emblib::drivers {
+namespace emblib::driver {
 
 class gyroscope {
 
