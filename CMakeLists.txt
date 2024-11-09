@@ -88,4 +88,16 @@ target_link_libraries(emblib PUBLIC
     eigen
 )
 
+# Executable for testing on the fly
+if (PROJECT_IS_TOP_LEVEL)
+    # Flags for the build
+    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
+    # Executable for running custom testing and debugging
+    add_executable(emblib_test src/test.cpp)
+    target_link_libraries(emblib_test PRIVATE emblib)
+endif()
+
 # TODO: Add a custom command for testing (cmake test)
