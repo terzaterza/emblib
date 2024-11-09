@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/char_dev.hpp"
+#include "emblib/driver/io/char_dev.hpp"
 #include "./i2c_master.hpp"
 
 namespace emblib::driver {
