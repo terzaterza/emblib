@@ -82,7 +82,7 @@ public:
      * Resets the I2C master object state and releases the bus if it is held
      * @note Constructors should use this function to initialize the device
     */
-    bool reset();
+    virtual bool reset() = 0;
 
 };
 

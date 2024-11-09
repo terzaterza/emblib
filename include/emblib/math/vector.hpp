@@ -27,13 +27,19 @@ public:
         return matrix<scalar_type, DIM, 1, base_type>::operator()(idx, 0);
     }
 
+    scalar_type& operator()(size_t idx)
+    {
+        return matrix<scalar_type, DIM, 1, base_type>::operator()(idx, 0);
+    }
+
     /**
      * Dot product
      */
     template <typename rhs_base>
     scalar_type dot(const vector_same_t<rhs_base>& rhs) const noexcept
     {
-        return this->transpose().matmul(rhs)(0, 0);
+        const auto res = this->transpose().matmul(rhs);
+        return res(0, 0);
     }
 
     /**

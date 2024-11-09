@@ -97,6 +97,14 @@ public:
     }
 
     /**
+     * Get element
+     */
+    scalar_type& operator()(size_t row, size_t col)
+    {
+        return m_base(row, col);
+    }
+
+    /**
      * Transpose
      */
     auto transpose() const noexcept;
@@ -187,6 +195,11 @@ public:
      * Are any elements non-null
      */
     bool any() const noexcept;
+
+    /**
+     * Fill all elements with the same value
+     */
+    void fill(scalar_type scalar) noexcept;
 
     /**
      * Matrix multiplication

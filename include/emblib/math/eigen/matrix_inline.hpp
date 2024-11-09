@@ -135,6 +135,12 @@ inline bool matrix<scalar_type, ROWS, COLS, base_type>::any() const noexcept
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::fill(scalar_type scalar) noexcept
+{
+    m_base.fill(scalar);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <size_t COLS_RHS, typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::matmul(const matrix<scalar_type, COLS, COLS_RHS, rhs_base> &rhs) const noexcept
 {
