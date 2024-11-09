@@ -13,8 +13,8 @@ TEST_CASE("Quaternion vector rotate", "[math][quaternion]")
     quaternionf q3 {0, 0, 1, 0};
     quaternionf q4 {0, 0, 0, 1};
 
-    REQUIRE(q1.rotate_vector(v) == v);
-    REQUIRE(q2.rotate_vector(v) == vector3f{1, 0, 1});
-    REQUIRE(q3.rotate_vector(v) == vector3f{-1, 0, 1});
-    REQUIRE(q4.rotate_vector(v) == vector3f{-1, 0, -1});
+    REQUIRE((q1.rotate_vec(v) == v).all());
+    REQUIRE((q2.rotate_vec(v) == vector3f{1, 0, 1}).all());
+    REQUIRE((q3.rotate_vec(v) == vector3f{-1, 0, 1}).all());
+    REQUIRE((q4.rotate_vec(v) == vector3f{-1, 0, -1}).all());
 }

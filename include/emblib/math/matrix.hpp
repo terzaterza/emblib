@@ -91,7 +91,7 @@ public:
     /**
      * Get element
      */
-    scalar_type operator()(size_t row, size_t col) const noexcept
+    scalar_type operator()(size_t row, size_t col) const
     {
         return m_base(row, col);
     }
