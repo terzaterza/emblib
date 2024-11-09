@@ -120,6 +120,12 @@ public:
     auto operator*(const matrix_same_t<rhs_base>& rhs) const noexcept;
 
     /**
+     * Element-wise multiplication of possibly different scalar type
+     */
+    template <typename rhs_scalar, typename rhs_base>
+    auto operator*(const matrix<rhs_scalar, ROWS, COLS, rhs_base>& rhs) const noexcept;
+
+    /**
      * Element-wise division
      */
     template <typename rhs_base>
@@ -136,6 +142,18 @@ public:
      */
     template <typename rhs_base>
     auto operator<=(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise less than
+     */
+    template <typename rhs_base>
+    auto operator>(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise less than or equal to
+     */
+    template <typename rhs_base>
+    auto operator>=(const matrix_same_t<rhs_base>& rhs) const noexcept;
 
     /**
      * Element-wise equal
@@ -191,6 +209,26 @@ public:
         return matrix<scalar_type, ROWS, COLS>(transpose().matdivl(divisor.transpose()).transpose());
     }
 
+    /**
+     * Element-wise addition in-place
+     */
+    template <typename rhs_base>
+    matrix& operator+=(const matrix_same_t<rhs_base>& rhs) const noexcept
+    {
+        m_base += rhs.get_base();
+        return *this;
+    }
+
+    /**
+     * Element-wise subtraction in-place
+     */
+    template <typename rhs_base>
+    matrix& operator-=(const matrix_same_t<rhs_base>& rhs) const noexcept
+    {
+        m_base -= rhs.get_base();
+        return *this;
+    }
+
 private:
     template <typename cast_type>
     auto cast_base() const noexcept;
@@ -200,6 +238,12 @@ private:
 };
 
 /** @todo Add external operators for scalar + matrix, ... */
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename matrix_base>
+auto operator*(const scalar_type& lhs, const matrix<scalar_type, ROWS, COLS, matrix_base>& rhs) noexcept
+{
+    return rhs * lhs;
+}
 
 /**
  * Convinience typedef for floating point matrices
