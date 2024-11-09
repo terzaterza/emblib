@@ -2,85 +2,86 @@
 
 #include "emblib/emblib.hpp"
 #include "emblib/math/vector.hpp"
-#include "emblib/algo/iir.hpp"
 
-namespace emblib::algo {
+namespace emblib::dsp {
 
-template <typename scalar_t, bool clamp = false>
+template <typename scalar_type, size_t DIM = 1>
 class pid {
 
 public:
-    enum class saturation {
-        NONE, LOW, HIGH
-    };
+    using vector_t = math::vector<scalar_type, DIM>;
+    using vector_bool_t = math::vector<bool, DIM>;
 
-    explicit pid(
-        scalar_t P,
-        scalar_t I,
-        scalar_t D,
-        scalar_t dt,
-        scalar_t clamp_low = 0,
-        scalar_t clamp_high = 0
-    ) noexcept : P(P), I(I), D(D), dt(dt), clamp_low(clamp_low), clamp_high(clamp_high)
+    pid(scalar_type kp,
+        scalar_type ki,
+        scalar_type kd
+    ) noexcept :
+        m_kp(kp),
+        m_ki(ki),
+        m_kd(kd),
+        m_clamp(false)
+    {}
+
+    pid(
+        scalar_type kp,
+        scalar_type ki,
+        scalar_type kd,
+        vector_t clamp_low,
+        vector_t clamp_high
+    ) noexcept :
+        m_kp(kp),
+        m_ki(ki),
+        m_kd(kd),
+        m_clamp(true),
+        m_clamp_low(clamp_low),
+        m_clamp_high(clamp_high)
     {}
 
     /**
      * Update PID state with the next input value
     */
-    scalar_t update(scalar_t input) noexcept
+    vector_t process(const vector_t& input, const scalar_type& dt) noexcept
     {
-        scalar_t next_integral = integral + input;
+        m_output = m_kp * input + (m_ki * dt) * m_integral + (m_kd / dt) * (input - m_prev_input);
 
-        output = P * input + I * dt * next_integral + D * (input - prev_input) / dt;
-
-        if constexpr(clamp) {
-            /* Contribute to integral only if not adding to saturation */
-            if ((saturation != saturation::HIGH && input >= 0) ||
-                (saturation != saturation::LOW && input <= 0)) {
-                integral = next_integral;
-            }
+        if (m_clamp) {
+            /* Only contributing to the integral where not saturated*/
+            m_integral += !m_saturated * input;
 
             /* Check whether there is saturation */
-            saturation = saturation::NONE;
-            if (output > clamp_high) {
-                output = clamp_high;
-                saturation = saturation::HIGH;
-            }
-            if (output < clamp_low) {
-                output = clamp_low;
-                saturation = saturation::LOW;
-            }
+            vector_bool_t sat_high = m_output > m_clamp_high;
+            vector_bool_t sat_low = m_output < m_clamp_low;
+            m_saturated = sat_high || sat_low;
+            
+            /* Vector (arithmetic) implementation of clamping the output */
+            m_output = !sat_high * m_output + sat_high * m_clamp_high;
+            m_output = !sat_low * m_output + sat_low * m_clamp_low;
         } else {
-            integral = next_integral;
+            m_integral += input;
         }
         
-        prev_input = input;
-        return output;
+        m_prev_input = input;
+        return m_output;
     }
 
-    scalar_t get_output() const noexcept
+    vector_t get_output() const noexcept
     {
-        return output;
-    }
-
-    saturation get_saturation() const noexcept
-    {
-        return saturation;
+        return m_output;
     }
 
 private:
-    scalar_t P;
-    scalar_t I;
-    scalar_t D;
-    scalar_t dt;
+    const scalar_type m_kp;
+    const scalar_type m_ki;
+    const scalar_type m_kd;
 
-    scalar_t output = 0;
-    scalar_t integral = 0;
-    scalar_t prev_input = 0;
+    bool m_clamp;
+    vector_t m_clamp_low;
+    vector_t m_clamp_high;
+    vector_bool_t m_saturated;
 
-    scalar_t clamp_low = 0;
-    scalar_t clamp_high = 0;
-    saturation saturation = saturation::NONE;
+    vector_t m_output {0};
+    vector_t m_integral {0};
+    vector_t m_prev_input {0};
 
 };
 
