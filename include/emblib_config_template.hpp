@@ -11,7 +11,8 @@
 #define EMBLIB_I2C_7BIT_ADDRESS     1
 
 #define EMBLIB_MATH_USE_GLM         0
-#define EMBLIB_MATH_USE_EIGEN       1
+#define EMBLIB_MATH_USE_EIGEN       0
+#define EMBLIB_MATH_USE_XTENSOR     1
 
 namespace emblib {
 

@@ -44,6 +44,9 @@ message(STATUS "emblib: GLM and ETL need to be built and installed, follow GitHu
 add_subdirectory("lib/etl")
 add_subdirectory("lib/glm")
 add_subdirectory("lib/eigen")
+add_subdirectory("lib/xtl")
+add_subdirectory("lib/xtensor")
+add_subdirectory("lib/xtensor-blas")
 
 # Testing only if this is the top level project
 if (PROJECT_IS_TOP_LEVEL)
@@ -86,6 +89,8 @@ target_link_libraries(emblib PUBLIC
     etl::etl
     glm::glm-header-only
     eigen
+    # xtensor
+    # xtensor-blas
 )
 
 # TODO: Add a custom command for testing (cmake test)
