@@ -66,3 +66,9 @@ using vectorf = vector<float, DIM>;
 using vector3f = vectorf<3>;
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace math;
+}
+#endif

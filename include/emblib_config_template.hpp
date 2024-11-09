@@ -1,5 +1,7 @@
 #pragma once
 
+#define EMBLIB_UNNEST_NAMESPACES    1
+
 #define EMBLIB_CHAR_DEV_SUPPORT_ETL 1
 
 #define EMBLIB_TIME_ALIGN_MILLIS    1

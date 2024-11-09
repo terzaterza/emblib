@@ -30,3 +30,9 @@ inline bool calculate_bias(math::vector3f& bias, size_t n, std::function<void()>
 }
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace driver::sensor;
+}
+#endif

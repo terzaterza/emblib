@@ -98,3 +98,9 @@ bool queue<item_type, CAPACITY>::peek(item_type& buffer, time::millisec timeout)
 #endif
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace rtos;
+}
+#endif

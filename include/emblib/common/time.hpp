@@ -36,3 +36,9 @@ static constexpr millisec MAX_MILLIS = millisec(-1);
 static constexpr tick MAX_TICKS = tick(-1);
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace time;
+}
+#endif

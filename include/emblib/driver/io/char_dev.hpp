@@ -7,7 +7,7 @@
 #include "etl/string.h"
 #endif
 
-namespace emblib {
+namespace emblib::driver {
 
 /**
  * Base class for all objects which want to provide an interface
@@ -97,3 +97,9 @@ public:
 };
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace driver;
+}
+#endif

@@ -87,3 +87,9 @@ public:
 };
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace driver;
+}
+#endif

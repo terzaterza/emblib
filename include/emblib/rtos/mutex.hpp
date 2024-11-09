@@ -80,3 +80,9 @@ inline bool mutex::unlock() noexcept
 #endif
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace rtos;
+}
+#endif
