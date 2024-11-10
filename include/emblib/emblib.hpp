@@ -10,3 +10,9 @@
 #ifndef UNUSED
 #define UNUSED(x)   ((void)(x))
 #endif
+
+namespace emblib {
+
+using size_t = unsigned int;
+
+}
