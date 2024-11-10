@@ -48,13 +48,19 @@ public:
      * Start an async write
      * @return `true` if write operation started successfully
      */
-    virtual bool write_async(const char* data, size_t size, const callback_t cb = callback_t()) noexcept = 0;
+    virtual bool write_async(const char* data, size_t size, const callback_t cb = callback_t()) noexcept
+    {
+        return false;
+    }
 
     /**
      * Start an async read
      * @return `true` if write operation started successfully
      */
-    virtual bool read_async(char* buffer, size_t size, const callback_t cb = callback_t()) noexcept = 0;
+    virtual bool read_async(char* buffer, size_t size, const callback_t cb = callback_t()) noexcept
+    {
+        return false;
+    }
 
     /**
      * Tests if the device is responding
