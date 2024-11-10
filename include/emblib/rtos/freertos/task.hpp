@@ -80,13 +80,13 @@ public:
     ) :
         m_task_func(task_func),
         m_task_handle(xTaskCreateStatic(
-            task_entry,
+            reinterpret_cast<void (*)(void*)>(&task_entry),
             name,
             STACK_SIZE,
             this,
             priority,
             stack,
-            m_task_buffer
+            &m_task_buffer
         ))
     {}
 

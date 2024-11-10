@@ -1,5 +1,4 @@
 #include "emblib/rtos/queue.hpp"
-#include "emblib/rtos/thread.hpp"
 #include "catch2/catch_test_macros.hpp"
 
 TEST_CASE("RTOS queue test", "[rtos][queue]")
