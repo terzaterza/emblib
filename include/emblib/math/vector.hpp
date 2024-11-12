@@ -22,6 +22,10 @@ public:
     vector(const std::initializer_list<scalar_type>& elements) :
         matrix<scalar_type, DIM, 1, base_type>({elements}) {}
 
+    template <typename other_base>
+    vector(const matrix<scalar_type, DIM, 1, other_base>& matrix) :
+        matrix<scalar_type, DIM, 1, base_type>(matrix.get_base()) {}
+
     scalar_type operator()(size_t idx) const
     {
         return matrix<scalar_type, DIM, 1, base_type>::operator()(idx, 0);

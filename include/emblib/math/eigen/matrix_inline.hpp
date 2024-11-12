@@ -60,6 +60,13 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const matrix_s
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator-() const noexcept
+{
+    auto res = -m_base;
+    return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator<(const matrix_same_t<rhs_base> &rhs) const noexcept
 {

@@ -140,6 +140,11 @@ public:
     auto operator/(const matrix_same_t<rhs_base>& rhs) const noexcept;
 
     /**
+     * Element-wise negative
+     */
+    auto operator-() const noexcept;
+
+    /**
      * Element-wise less than
      */
     template <typename rhs_base>
