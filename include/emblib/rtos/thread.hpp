@@ -28,7 +28,7 @@ static void sleep(time::millisec duration) noexcept;
  * Wait for this thread to get notified
  * @returns `false` on timeout, else `true`
  */
-static bool wait_notification(time::millisec timeout) noexcept;
+static bool wait_notification(time::millisec timeout = time::MAX_MILLIS) noexcept;
 #endif
 
 }
@@ -80,7 +80,7 @@ public:
      * Increment thread's notification value
      * @note Unblocks this thread if is currently waiting on notification
      */
-    void notify(time::millisec timeout) noexcept;
+    void notify() noexcept;
 #endif
 
     /**
@@ -113,7 +113,7 @@ static bool this_thread::wait_notification(time::millisec timeout) noexcept
     return freertos::notify_take(false, timeout);
 }
 
-inline void thread::notify(time::millisec timeout) noexcept
+inline void thread::notify() noexcept
 {
     m_native_thread.notify();
 }

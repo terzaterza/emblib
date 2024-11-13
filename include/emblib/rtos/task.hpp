@@ -61,13 +61,13 @@ public:
      * @note Lightweight version of a semaphore which can be
      * taken only by this task
      */
-    bool wait_notification(time::millisec timeout) noexcept;
+    bool wait_notification(time::millisec timeout = time::MAX_MILLIS) noexcept;
 
     /**
      * Increment this task's notification value
      * @note Unblocks this task if is currently waiting on notification
      */
-    void notify(time::millisec timeout) noexcept;
+    void notify() noexcept;
 #endif
 
     /**
@@ -113,7 +113,7 @@ inline bool task::wait_notification(time::millisec timeout) noexcept
     return freertos::notify_take(false, timeout);
 }
 
-inline void task::notify(time::millisec timeout) noexcept
+inline void task::notify() noexcept
 {
     m_native_task.notify();
 }
