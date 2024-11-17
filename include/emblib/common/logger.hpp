@@ -19,24 +19,24 @@ template <size_t BUFFER_SIZE>
 class logger {
 
 public:
-    explicit logger(char_dev& log_device) :
+    /** @todo Move to protected */
+    using buffer_t = etl::string<BUFFER_SIZE>;
+
+    explicit logger(char_dev* log_device) :
         m_log_device(log_device)
     {}
 
     template <typename... item_types>
-    void log(log_level_e level, item_types... items) noexcept
+    void log(log_level_e level, item_types&&... items) noexcept
     {
         if (!m_log_device || level < m_output_level) {
             return;
         }
 
         m_mutex.lock();
-        
+
         (log_item(items), ...);
-
-        /** @todo Add writing the level */
-
-        m_log_device->write(m_buffer.c_str(), m_buffer.size());
+        flush(level, m_buffer, *m_log_device);
         m_buffer.clear();
         
         /** @todo Instead of clear can remove number of written
@@ -48,6 +48,11 @@ public:
     void set_output_level(log_level_e level) noexcept
     {
         m_output_level = level;
+    }
+
+    void set_output_device(char_dev& device) noexcept
+    {
+        m_log_device = &device;
     }
 
 private:
@@ -68,10 +73,15 @@ private:
         etl::to_string(number, m_buffer, true);
     }
 
+    virtual void flush(log_level_e level, const buffer_t& buffer, char_dev& log_device) noexcept
+    {
+        log_device.write(buffer.c_str(), buffer.size());
+    }
+
 private:
     log_level_e m_output_level = log_level_e::INFO;
-    etl::string<BUFFER_SIZE> m_buffer;
-    char_dev& m_log_device;
+    char_dev* m_log_device;
+    buffer_t m_buffer;
     mutex m_mutex;
 };
 
