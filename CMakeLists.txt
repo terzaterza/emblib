@@ -28,9 +28,11 @@ else()
     add_subdirectory("lib/FreeRTOS-Kernel")
 endif()
 
-if (PROJECT_IS_TOP_LEVEL)
+if (PROJECT_IS_TOP_LEVEL OR NOT TARGET freertos_hooks)
     # Stub implementation for FreeRTOS hooks
     target_sources(freertos_kernel PRIVATE src/rtos/freertos/hooks.c)
+else()
+    target_link_libraries(freertos_kernel PRIVATE freertos_hooks)
 endif()
 
 

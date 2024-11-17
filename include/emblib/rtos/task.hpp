@@ -21,6 +21,7 @@ using task_stack_t = uint8_t[SIZE_IN_BYTES];
  * OOP style API for a thread
  */
 class task {
+
 public:
 #if EMBLIB_RTOS_USE_FREERTOS
     using native_task_t = freertos::task;
@@ -35,6 +36,7 @@ public:
         size_t priority,
         task_stack_t<STACK_SIZE_BYTES>& stack
     );
+    virtual ~task() = default;
 
     /* Copy operations not allowed */
     task(const task&) = delete;
