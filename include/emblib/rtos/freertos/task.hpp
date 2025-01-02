@@ -74,6 +74,19 @@ public:
     task& operator=(task&&) = delete;
 
     /**
+     * Sleep relative to previous wake up time
+     * @returns `true` if wakeup was delayed, false if woke up on time
+     */
+    bool sleep_periodic(TickType_t period) noexcept
+    {
+        if (m_first_period) {
+            m_first_period = false;
+            m_prev_wakeup = xTaskGetTickCount();
+        }
+        return xTaskDelayUntil(&m_prev_wakeup, period) == pdTRUE;
+    }
+
+    /**
      * Increment task's notification value (works like a counting semaphore)
      */
     void notify() noexcept
@@ -109,6 +122,9 @@ private:
     
     StaticTask_t m_task_buffer;
     TaskHandle_t m_task_handle;
+
+    TickType_t m_prev_wakeup;
+    bool m_first_period = true;
 };
 
 }

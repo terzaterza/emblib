@@ -75,6 +75,7 @@ public:
     /**
      * Put this task to sleep until (last wake up time from this method + period)
      * @note First time this is called, next wake up time is relative to task creation
+     * @todo Can change return type to bool to signal if woke up on time
      */
     void sleep_periodic(ticks_t period) noexcept;
 

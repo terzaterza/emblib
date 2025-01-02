@@ -16,6 +16,11 @@ inline void task::sleep(ticks_t duration) noexcept
     vTaskDelay(duration.count());
 }
 
+inline void task::sleep_periodic(ticks_t period) noexcept
+{
+    m_native_task.sleep_periodic(period.count());
+}
+
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
 inline bool task::wait_notification(ticks_t timeout) noexcept
 {
