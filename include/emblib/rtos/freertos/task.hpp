@@ -52,6 +52,11 @@ static inline void delay(time::tick ticks) noexcept
     vTaskDelay(ticks.count());
 }
 
+/**
+ * Lightweight version of semaphore take
+ * @note If clear_count is false, the notification value is
+ * decremented instead of set to 0
+ */
 static inline uint32_t notify_take(bool clear_count, time::tick ticks) noexcept
 {
     return ulTaskNotifyTake(clear_count, ticks.count());

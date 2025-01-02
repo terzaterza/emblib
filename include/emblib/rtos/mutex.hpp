@@ -64,17 +64,7 @@ private:
 
 
 #if EMBLIB_RTOS_USE_FREERTOS
-
-inline bool mutex::lock(time::millisec timeout) noexcept
-{
-    return m_native_mutex.take(timeout);
-}
-
-inline bool mutex::unlock() noexcept
-{
-    return m_native_mutex.give();
-}
-
+    #include "./freertos/impl/mutex_inline.hpp"
 #else
 #error "Mutex implementation missing"
 #endif
