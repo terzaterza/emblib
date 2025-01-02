@@ -7,8 +7,8 @@ TEST_CASE("RTOS queue test", "[rtos][freertos][queue]")
     int to_send = 2;
     int buffer = 0;
 
-    queue.send(to_send, emblib::time::millisec(10));
-    queue.receive(buffer, emblib::time::millisec(10));
+    queue.send(to_send, std::chrono::milliseconds(10));
+    queue.receive(buffer, std::chrono::milliseconds(10));
 
     REQUIRE(to_send == buffer);
 }

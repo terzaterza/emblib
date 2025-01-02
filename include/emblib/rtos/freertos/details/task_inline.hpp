@@ -11,13 +11,13 @@ inline void task::start_tasks() noexcept
     freertos::start_scheduler();
 }
 
-inline void task::sleep(time::millisec duration)
+inline void task::sleep(ticks_t duration) noexcept
 {
-    freertos::delay(duration);
+    vTaskDelay(duration.count());
 }
 
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
-inline bool task::wait_notification(time::millisec timeout) noexcept
+inline bool task::wait_notification(ticks_t timeout) noexcept
 {
     return freertos::notify_take(false, timeout);
 }
