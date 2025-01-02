@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/math/vector.hpp"
+#include <cmath>
 
 namespace emblib::driver {
 
@@ -44,16 +44,16 @@ public:
     virtual bool read_axis(axis_e axis, float& out_dps) noexcept = 0;
 
     /**
-     * Read data of all axes into into a 3 dimensional vector in degrees per second [dps]
-     * @note Default implementation is to read all 3 axes separately and combine the result
-     * into a vector, but can be overriden to allow reading all the values in one bus transaction
+     * Read data of all axes into an array in units of degrees per second [dps]
+     * @note Default implementation is to read all 3 axes one by one, but
+     * can be overriden to allow reading of all the values in one bus transaction
      */
-    virtual bool read(math::vector3f& out_vec) noexcept
+    virtual bool read_all_axes(float (&out_data)[3]) noexcept
     {
         bool success = true;
-        success &= read_axis(axis_e::X, out_vec(0));
-        success &= read_axis(axis_e::Y, out_vec(1));
-        success &= read_axis(axis_e::Z, out_vec(2));
+        success &= read_axis(axis_e::X, out_data[0]);
+        success &= read_axis(axis_e::Y, out_data[1]);
+        success &= read_axis(axis_e::Z, out_data[2]);
         return success;
     }
 
