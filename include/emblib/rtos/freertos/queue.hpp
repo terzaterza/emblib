@@ -1,13 +1,14 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
-
 #include "FreeRTOS.h"
 #include "queue.h"
 
 namespace emblib::rtos::freertos {
 
+/**
+ * FreeRTOS queue
+ */
 template <typename item_type, size_t CAPACITY>
 class queue {
 
@@ -27,9 +28,9 @@ public:
     /**
      * Queue send
      */
-    bool send(const item_type& item, time::tick timeout) noexcept
+    bool send(const item_type& item, TickType_t timeout) noexcept
     {
-        return xQueueSend(m_queue_handle, &item, timeout.count()) == pdTRUE;
+        return xQueueSend(m_queue_handle, &item, timeout) == pdTRUE;
     }
 
     /**
@@ -43,17 +44,17 @@ public:
     /**
      * Receive item from queue
      */
-    bool receive(item_type& buffer, time::tick timeout) noexcept
+    bool receive(item_type& buffer, TickType_t timeout) noexcept
     {
-        return xQueueReceive(m_queue_handle, &buffer, timeout.count()) == pdTRUE;
+        return xQueueReceive(m_queue_handle, &buffer, timeout) == pdTRUE;
     }
 
     /**
      * Peek queue
      */
-    bool peek(item_type& buffer, time::tick timeout) noexcept
+    bool peek(item_type& buffer, TickType_t timeout) noexcept
     {
-        return xQueuePeek(m_queue_handle, &buffer, timeout.count()) == pdTRUE;
+        return xQueuePeek(m_queue_handle, &buffer, timeout) == pdTRUE;
     }
 
 private:

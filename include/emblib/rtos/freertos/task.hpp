@@ -1,11 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
-
 #include "FreeRTOS.h"
 #include "task.h"
-
 #include <functional>
 
 namespace emblib::rtos::freertos {
@@ -33,33 +30,6 @@ static inline void start_scheduler() noexcept
 static inline scheduler_state_e get_scheduler_state() noexcept
 {
     return static_cast<scheduler_state_e>(xTaskGetSchedulerState());
-}
-
-/**
- * Switch to a higher priority task if one was woken
- */
-static inline void yield_from_isr(bool task_woken) noexcept
-{
-    portYIELD_FROM_ISR(task_woken);
-}
-
-/**
- * Delay the current task
- * @todo Can move to namespace this_task (this_thread)
- */
-static inline void delay(time::tick ticks) noexcept
-{
-    vTaskDelay(ticks.count());
-}
-
-/**
- * Lightweight version of semaphore take
- * @note If clear_count is false, the notification value is
- * decremented instead of set to 0
- */
-static inline uint32_t notify_take(bool clear_count, time::tick ticks) noexcept
-{
-    return ulTaskNotifyTake(clear_count, ticks.count());
 }
 
 /**
@@ -139,7 +109,6 @@ private:
     
     StaticTask_t m_task_buffer;
     TaskHandle_t m_task_handle;
-    // TickType_t m_delay_until_last = 0;
 };
 
 }
