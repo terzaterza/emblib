@@ -1,14 +1,11 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
-
 #if EMBLIB_RTOS_USE_FREERTOS
-#include "./freertos/semaphore.hpp"
+    #include "./freertos/semaphore.hpp"
 #else
-#error "Mutex implementation missing"
 #endif
-
+#include "emblib/rtos/task.hpp"
 
 namespace emblib::rtos {
 
@@ -37,14 +34,12 @@ public:
 
     /**
      * Mutex lock
-     * 
      * @returns `true` if successful
      */
-    bool lock(time::millisec timeout = time::MAX_MILLIS) noexcept;
+    bool lock(ticks_t timeout = MAX_TICKS) noexcept;
 
     /**
      * Mutex unlock
-     * 
      * @returns `true` if successful
      */
     bool unlock() noexcept;
@@ -64,7 +59,7 @@ private:
 
 
 #if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/impl/mutex_inline.hpp"
+    #include "./freertos/details/mutex_inline.hpp"
 #else
 #error "Mutex implementation missing"
 #endif

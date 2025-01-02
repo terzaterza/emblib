@@ -1,13 +1,11 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
-
 #if EMBLIB_RTOS_USE_FREERTOS
     #include "./freertos/task.hpp"
 #else
-    
 #endif
+#include <chrono>
 
 namespace emblib::rtos {
 
@@ -18,7 +16,24 @@ template <size_t SIZE_IN_BYTES>
 using task_stack_t = uint8_t[SIZE_IN_BYTES];
 
 /**
- * OOP style API for a thread
+ * Duration of a period of time in number of ticks
+ * @note Duration of a single tick is defined in emblib_config.hpp
+ */
+using ticks_t =
+#if EMBLIB_RTOS_TICK_MILLIS
+    std::chrono::milliseconds;
+#else
+    #error "Ticks not defined"
+#endif
+
+/**
+ * Maximum duration used to signal indefinite waiting
+ */
+static constexpr ticks_t MAX_TICKS = ticks_t(-1);
+
+
+/**
+ * Thread interface
  */
 class task {
 
@@ -26,7 +41,7 @@ public:
 #if EMBLIB_RTOS_USE_FREERTOS
     using native_task_t = freertos::task;
 #else
-    #error "Thread implementation missing"
+    #error "Task implementation missing"
 #endif
 
 public:
@@ -55,7 +70,13 @@ public:
      * Put the currently running thread to sleep
      * @note Static since can be called even baremetal and implemented using HAL
      */
-    static inline void sleep(time::millisec duration);
+    static inline void sleep(ticks_t duration) noexcept;
+
+    /**
+     * Put this task to sleep until (last wake up time from this method + period)
+     * @note First time this is called, next wake up time is relative to task creation
+     */
+    void sleep_periodic(ticks_t period) noexcept;
 
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
     /**
@@ -63,7 +84,7 @@ public:
      * @note Lightweight version of a semaphore which can be
      * taken only by this task
      */
-    bool wait_notification(time::millisec timeout = time::MAX_MILLIS) noexcept;
+    bool wait_notification(ticks_t timeout = MAX_TICKS) noexcept;
 
     /**
      * Increment this task's notification value
@@ -91,8 +112,9 @@ private:
 
 };
 
+
 #if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/impl/task_inline.hpp"
+    #include "./freertos/details/task_inline.hpp"
 #else
     #error "Thread implementation missing"
 #endif

@@ -1,16 +1,18 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
-
 #if EMBLIB_RTOS_USE_FREERTOS
-#include "./freertos/queue.hpp"
+    #include "./freertos/queue.hpp"
 #else
-#error "Thread implementation missing"
+    #error "Thread implementation missing"
 #endif
+#include "emblib/rtos/task.hpp"
 
 namespace emblib::rtos {
 
+/**
+ * Thread-safe FIFO queue with sending and receiving task blocking
+ */
 template <typename item_type, size_t CAPACITY>
 class queue {
 
@@ -18,7 +20,7 @@ public:
 #if EMBLIB_RTOS_USE_FREERTOS
     using native_queue_t = freertos::queue<item_type, CAPACITY>;
 #else
-
+    #error "Queue implementation missing"
 #endif
 
     explicit queue() = default;
@@ -35,7 +37,7 @@ public:
      * Send item to the queue
      * @returns `false` on timeout, else `true`
      */
-    bool send(const item_type& item, time::millisec timeout = time::MAX_MILLIS) noexcept;
+    bool send(const item_type& item, ticks_t timeout = MAX_TICKS) noexcept;
 
     /**
      * Send item to the queue, don't block if queue full
@@ -46,12 +48,12 @@ public:
      * Receive item from the queue
      * @returns `false` on timeout, else `true`
      */
-    bool receive(item_type& buffer, time::millisec timeout = time::MAX_MILLIS) noexcept;
+    bool receive(item_type& buffer, ticks_t timeout = MAX_TICKS) noexcept;
 
     /**
-     * Similar to receive, but doesn't remove item from the queue
+     * Similar to receive, but doesn't remove the item from the queue
      */
-    bool peek(item_type& buffer, time::millisec timeout = time::MAX_MILLIS) noexcept;
+    bool peek(item_type& buffer, ticks_t timeout = MAX_TICKS) noexcept;
 
     /**
      * Get reference to the native queue object
@@ -68,7 +70,7 @@ private:
 
 
 #if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/impl/queue_inline.hpp"
+    #include "./freertos/details/queue_inline.hpp"
 #else
 #error "Mutex implementation missing"
 #endif
