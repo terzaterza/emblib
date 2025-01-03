@@ -12,6 +12,7 @@ public:
     ssize_t write(const char* data, size_t size) noexcept override
     {
         std::cout.write(data, size);
+        // std::cout.flush();
         return size;
     }
 
