@@ -24,7 +24,7 @@ inline void task::sleep_periodic(ticks_t period) noexcept
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
 inline bool task::wait_notification(ticks_t timeout) noexcept
 {
-    return freertos::notify_take(false, timeout);
+    return ulTaskNotifyTake(false, timeout.count());
 }
 
 inline void task::notify() noexcept
