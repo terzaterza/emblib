@@ -2,7 +2,6 @@
 
 #include "emblib/driver/io/char_dev.hpp"
 #include "emblib/rtos/mutex.hpp"
-
 #include "etl/string.h"
 #include "etl/to_string.h"
 
@@ -24,7 +23,9 @@ public:
 
     explicit logger(char_dev* log_device) :
         m_log_device(log_device)
-    {}
+    {
+        m_format.precision(3);
+    }
 
     template <typename... item_types>
     void log(log_level_e level, item_types&&... items) noexcept
@@ -55,6 +56,11 @@ public:
         m_log_device = &device;
     }
 
+    void set_numeric_precision(size_t decimal_digits) noexcept
+    {
+        m_format.precision(decimal_digits);
+    }
+
 private:
     void log_item(const char* msg) noexcept
     {
@@ -70,7 +76,7 @@ private:
     template <typename num_type, typename = typename std::enable_if<std::is_arithmetic<num_type>::value, num_type>::type>
     void log_item(num_type number) noexcept
     {
-        etl::to_string(number, m_buffer, true);
+        etl::to_string(number, m_buffer, m_format, true);
     }
 
     virtual void flush(log_level_e level, const buffer_t& buffer, char_dev& log_device) noexcept
@@ -83,6 +89,7 @@ private:
     char_dev* m_log_device;
     buffer_t m_buffer;
     mutex m_mutex;
+    etl::format_spec m_format;
 };
 
 }
