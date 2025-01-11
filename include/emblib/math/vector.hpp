@@ -63,6 +63,16 @@ public:
             lhs(0) * rhs(1) - lhs(1) * rhs(0)
         };
     }
+
+    scalar_type norm_sq() const noexcept
+    {
+        scalar_type res {0};
+        for (size_t i = 0; i < DIM; i++) {
+            auto elem = (*this)(i);
+            res += elem * elem;
+        }
+        return res;
+    }
 };
 
 

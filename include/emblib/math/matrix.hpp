@@ -134,10 +134,30 @@ public:
     auto operator*(const matrix<rhs_scalar, ROWS, COLS, rhs_base>& rhs) const noexcept;
 
     /**
+     * Element-wise multiplication with a scalar
+     */
+    auto operator*(const scalar_type& rhs) const noexcept;
+
+    /**
+     * Element-wise in-place multiplication with a scalar
+     */
+    void operator*=(const scalar_type& rhs) noexcept;
+
+    /**
      * Element-wise division
      */
     template <typename rhs_base>
     auto operator/(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise division with a scalar
+     */
+    auto operator/(const scalar_type& rhs) const noexcept;
+
+    /**
+     * Element-wise in-place division with a scalar
+     */
+    void operator/=(const scalar_type& rhs) noexcept;
 
     /**
      * Element-wise negative

@@ -52,6 +52,32 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix<r
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const scalar_type &rhs) const noexcept
+{
+    auto res = m_base * rhs;
+    return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const scalar_type &rhs) noexcept
+{
+    m_base *= rhs;
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const scalar_type &rhs) const noexcept
+{
+    auto res = m_base / rhs;
+    return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator/=(const scalar_type &rhs) noexcept
+{
+    m_base /= rhs;
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
