@@ -57,6 +57,23 @@ private:
 
 };
 
+class scoped_lock {
+public:
+    explicit scoped_lock(mutex& mutex) noexcept :
+        m_mutex(mutex)
+    {
+        m_mutex.lock();
+    }
+
+    ~scoped_lock() noexcept
+    {
+        m_mutex.unlock();
+    }
+
+private:
+    mutex& m_mutex;
+};
+
 
 #if EMBLIB_RTOS_USE_FREERTOS
     #include "./freertos/details/mutex_inline.hpp"
