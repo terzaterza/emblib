@@ -12,7 +12,7 @@ public:
     quaternion(scalar_type w, scalar_type x, scalar_type y, scalar_type z) noexcept :
         m_w(w), m_x(x), m_y(y), m_z(z) {}
 
-    quaternion(scalar_type real, vector<scalar_type, 3> imag) noexcept :
+    quaternion(scalar_type real, const vector<scalar_type, 3>& imag) noexcept :
         m_w(real), m_x(imag(0)), m_y(imag(1)), m_z(imag(2)) {}
 
     scalar_type get_real() const noexcept
@@ -22,7 +22,7 @@ public:
 
     vector<scalar_type, 3> get_imag() const noexcept
     {
-        return vector<scalar_type, 3> {m_x, m_y, m_z};
+        return {m_x, m_y, m_z};
     }
 
     quaternion conjugate() const noexcept
@@ -53,6 +53,11 @@ public:
     vector<scalar_type, 3> rotate_vec(const vector<scalar_type, 3>& vec) const noexcept
     {
         return ((*this) * quaternion(0, vec) * conjugate()).get_imag();
+    }
+
+    vector<scalar_type, 4> as_vector() const noexcept
+    {
+        return {m_w, m_x, m_y, m_z};
     }
 
 private:
