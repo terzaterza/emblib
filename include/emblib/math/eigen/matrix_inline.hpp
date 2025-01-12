@@ -13,6 +13,15 @@ inline matrix<scalar_type, ROWS, COLS, base_type>::matrix(const std::initializer
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <size_t TOP, size_t LEFT, size_t ROW_COUNT, size_t COL_COUNT>
+inline auto emblib::math::matrix<scalar_type, ROWS, COLS, base_type>::get_submatrix() noexcept
+{
+    static_assert((TOP + ROW_COUNT <= ROWS) && (LEFT + COL_COUNT <= COLS));
+    auto res = m_base.template block<ROW_COUNT, COL_COUNT>(TOP, LEFT);
+    return matrix<scalar_type, ROW_COUNT, COL_COUNT, decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::transpose() const noexcept
 {
     auto res = m_base.transpose();

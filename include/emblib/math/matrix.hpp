@@ -105,6 +105,13 @@ public:
     }
 
     /**
+     * Get a reference to a submatrix
+     * @todo Create a const version
+     */
+    template <size_t TOP, size_t LEFT, size_t ROW_COUNT, size_t COL_COUNT>
+    auto get_submatrix() noexcept;
+
+    /**
      * Transpose
      */
     auto transpose() const noexcept;

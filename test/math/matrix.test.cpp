@@ -48,3 +48,16 @@ TEST_CASE("Matrix concat horizontal", "[math][matrix]")
 
     // REQUIRE(a.concat_horizontal<2>(b) == result);
 }
+
+TEST_CASE("Matrix submatrix edit", "[math][matrix]")
+{
+    using emblib::math::matrixf;
+    matrixf<3, 4> a {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+    
+    matrixf<2> submatrix = a.get_submatrix<1, 2, 2, 2>();
+    submatrix(0, 0) = 20;
+    submatrix(1, 1) = 30;
+
+    matrixf<3, 4> expected {{1, 2, 3, 4}, {5, 6, 20, 8}, {9, 10, 11, 30}};
+    REQUIRE((a == expected).all());
+}
