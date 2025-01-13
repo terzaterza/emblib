@@ -274,6 +274,18 @@ public:
         return *this;
     }
 
+    /**
+     * Diagonal matrix
+     */
+    static matrix diagonal(scalar_type diag_elem = 1) noexcept
+    {
+        static_assert(ROWS == COLS);
+        matrix result {0};
+        for (size_t i = 0; i < ROWS; i++)
+            result(i, i) = diag_elem;
+        return result;
+    }
+
 private:
     template <typename cast_type>
     auto cast_base() const noexcept;
