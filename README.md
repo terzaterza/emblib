@@ -1,10 +1,14 @@
 # emblib
 
-C++ wrapper library for embedded development.
+C++ library for embedded development.
 
-Intended to provide a unified interface to different underlying library implementations with common functionality. Allows writing platform independent code, and providing hardware specific drivers on board bring-up. Only static allocation used. Library dependencies can be customized or auto configured with default settings through CMake.
+Intended to provide a consistent API to different hardware and software components, to enable writing platform-independent code. Provides wrappers for common dependencies such as math or RTOS libraries, Eigen and FreeRTOS implementations are provided. Standard libraries are used lightly, for headers like \<cstdint\> or \<functional\>, and dynamic allocation is completely avoided. Underlying library dependencies (such as FreeRTOS) can be configured in parent projects through CMake or auto configured with default settings by emblib.
 
-Some interfaces:
+Some APIs:
+- Drivers
+    - Serial (char) devices - I2C, SPI
+    - Sensors - Accelerometer, Gyro
+    - GPIO
 - RTOS
     - Mutex
     - Task (Thread)
@@ -13,14 +17,10 @@ Some interfaces:
     - Matrix
     - Vector
     - Quaternion
-- Algorithms
-    - Extended Kalman filter
-    - IIR filter
-    - PID controller
-- Drivers
-    - Generic serial devices
-    - Accelerometer
-    - Gyroscope
+- DSP
+    - Kalman filter (& EKF)
+    - IIR filter (WIP)
+    - PID controller (WIP)
 
 ## Adding emblib to a project
 As emblib depends on other libraries which are fetched as git submodules, the easiest way to include all of them is to clone this repository recursively into the project.
