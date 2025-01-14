@@ -29,11 +29,17 @@ public:
     vector(const matrix<scalar_type, DIM, 1, other_base>& matrix) :
         matrix<scalar_type, DIM, 1, base_type>(matrix.get_base()) {}
 
+    /**
+     * Get element as a copy
+     */
     scalar_type operator()(size_t idx) const
     {
         return matrix<scalar_type, DIM, 1, base_type>::operator()(idx, 0);
     }
 
+    /**
+     * Get element by reference
+     */
     scalar_type& operator()(size_t idx)
     {
         return matrix<scalar_type, DIM, 1, base_type>::operator()(idx, 0);
@@ -64,6 +70,9 @@ public:
         };
     }
 
+    /**
+     * Compute the square of the norm
+     */
     scalar_type norm_sq() const noexcept
     {
         scalar_type res {0};
@@ -72,6 +81,19 @@ public:
             res += elem * elem;
         }
         return res;
+    }
+
+    /**
+     * Create a square matrix with elements of this vector
+     * as diagonal elements
+     */
+    matrix<scalar_type, DIM> as_diagonal() const noexcept
+    {
+        matrix<scalar_type, DIM> result {0};
+        for (size_t i = 0; i < DIM; i++) {
+            result(i, i) = (*this)(i);
+        }
+        return result;
     }
 };
 
