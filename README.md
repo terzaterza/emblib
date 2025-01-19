@@ -18,9 +18,9 @@ Some APIs:
     - Vector
     - Quaternion
 - DSP
-    - Kalman filter (& EKF)
-    - IIR filter (WIP)
-    - PID controller (WIP)
+    - Kalman filter (EKF)
+    - IIR filter
+    - PID controller
 
 ## Adding emblib to a project
 As emblib depends on other libraries which are fetched as git submodules, the easiest way to include all of them is to clone this repository recursively into the project.
@@ -29,11 +29,24 @@ git clone --recursive https://github.com/terzaterza/emblibcpp.git
 ```
 The library can then be included to a CMake project by adding this subdirectory, and linking the library to your target. CMake library (target) name is `emblib`.
 ```cmake
-#Create emblib_config target here if needed
+# Create the emblib_config target here if needed
+# View the next section for info about the config
 
 add_subdirectory("<path-to-cloned-repo>")
+target_link_libraries(<target> PUBLIC/PRIVATE emblib)
+```
+The header files will then be available via the path from the [include](include/) folder. Headers follow the namespace hierarchy according to the file path, for example a class defined in the [include/emblib/math](include/emblib/math/) folder will be in the namespace `emblib::math`.
 
-target_link_libraries(<project-target> PUBLIC/PRIVATE emblib)
+Header files are meant to be standalone, meaning it's enough to include only the file where the class you need is defined. All the necessary dependencies, including your custom emblib configuration, are included automatically.
+
+To use a `matrix` class for example, you would add the following to your code:
+```cpp
+#include "emblib/math/matrix.hpp"
+
+void your_function()
+{
+    emblib::math::matrix<float, 3, 3> my_matrix {/* elements */};
+}
 ```
 
 ## CMake configuration
@@ -56,3 +69,10 @@ FreeRTOS port will be provided by default, depending on the host operating syste
 For the configuration, `freertos_config` target can be provided with the include directory attached providing the `FreeRTOSConfig.h` file. If one does not exist, a default config file will be used, based on the GCC_POSIX port.
 
 FreeRTOS (static) library can also be provided, be creating `freertos_kernel` target in a parent CMake project.
+
+## Project structure
+Source files are split between `src` and `include` folders, where files in the `src` folder are used only within this project, but the files in the `include` folder are meant to be public, ie. included by projects that use this library.
+
+Dependencies (some of which might be optional) are located in the `lib` folder, as git submodules.
+
+Testing is done using the `Catch2` framework and all the related files are in the `test` folder.
