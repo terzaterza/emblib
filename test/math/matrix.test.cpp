@@ -54,7 +54,7 @@ TEST_CASE("Matrix submatrix edit", "[math][matrix]")
     using emblib::math::matrixf;
     matrixf<3, 4> a {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
     
-    matrixf<2> submatrix = a.get_submatrix<1, 2, 2, 2>();
+    auto submatrix = a.get_submatrix<1, 2, 2, 2>();
     submatrix(0, 0) = 20;
     submatrix(1, 1) = 30;
 
