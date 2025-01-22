@@ -151,6 +151,12 @@ public:
     void operator*=(const scalar_type& rhs) noexcept;
 
     /**
+     * Element-wise multiplication in-place
+     */
+    template <typename rhs_base>
+    void operator*=(const matrix_same_t<rhs_base>& rhs) noexcept;
+
+    /**
      * Element-wise division
      */
     template <typename rhs_base>
@@ -258,7 +264,7 @@ public:
      * Element-wise addition in-place
      */
     template <typename rhs_base>
-    matrix& operator+=(const matrix_same_t<rhs_base>& rhs) const noexcept
+    matrix& operator+=(const matrix_same_t<rhs_base>& rhs) noexcept
     {
         m_base += rhs.get_base();
         return *this;
@@ -268,7 +274,7 @@ public:
      * Element-wise subtraction in-place
      */
     template <typename rhs_base>
-    matrix& operator-=(const matrix_same_t<rhs_base>& rhs) const noexcept
+    matrix& operator-=(const matrix_same_t<rhs_base>& rhs) noexcept
     {
         m_base -= rhs.get_base();
         return *this;

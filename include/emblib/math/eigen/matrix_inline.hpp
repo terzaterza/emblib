@@ -74,6 +74,13 @@ inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const scalar_
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const matrix_same_t<rhs_base> &rhs) noexcept
+{
+    m_base.array() *= rhs.get_base().array();
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const scalar_type &rhs) const noexcept
 {
     auto res = m_base / rhs;
