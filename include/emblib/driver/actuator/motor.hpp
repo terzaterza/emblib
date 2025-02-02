@@ -37,7 +37,7 @@ public:
      * `G(s) = 1 / (1 + s k_t)`
      * return `k_t`
      */
-    virtual float get_time_consant() const noexcept = 0;
+    virtual float get_time_constant() const noexcept = 0;
 
 };
 

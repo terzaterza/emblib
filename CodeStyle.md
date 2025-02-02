@@ -1,10 +1,10 @@
 ## Naming and notation
 
 ### Classes
-Classes are named lowercase with underscores (`_`) separating words. Member variables are prefixed with `m_` and static variables are prefixed with `s_`.
+Classes names are lowercase with underscores (`_`) separating words. Member variables are prefixed with `m_` and static member variables are prefixed with `s_`.
 
 Methods are listed in the order: public, protected, private.
-Methods should start with a verb, for example `int get_count()` instead of `int count()`. Static variables inside methods and functions are prefixed with `s_`.
+Methods should start with a verb, for example `int get_count()` instead of `int count()` or `bool is_ready()` instead of `bool ready()`. Static variables inside methods and functions are not prefixed with `s_`.
 
 ```cpp
 class i2c_master {
@@ -13,7 +13,7 @@ class i2c_master {
 ```
 
 ### Structs
-Structs are named same as classes with trailing `_s`. Struct members should not be prefixed and visibility inside a struct must not be modified (all members should be public).
+Structs are named similarly to classes, but with trailing `_s`. Struct members should not be prefixed and visibility inside a struct must not be modified (all members should be public).
 
 If methods inside a struct are needed, they must be `const`.
 
@@ -38,6 +38,20 @@ constexpr size_t OUT_PORT_BUFFER_SIZE = 12;
 Enum classes should have the `_e` suffix. Members should follow rules for constants.
 
 If using C-style enums (not enum classes), all members should be prefixed by the enum class name, excluding the `_e` suffix.
+
+```cpp
+enum class colors_e {
+    RED,
+    GREEN,
+    BLUE
+};
+
+enum colors_e {
+    COLORS_RED,
+    COLORS_GREEN,
+    COLORS_BLUE
+};
+```
 
 ### Unions
 Suffix `_u`. Don't use classes inside unions, only structs and primitive types.
