@@ -25,7 +25,7 @@ Some APIs:
 ## Adding emblib to a project
 As emblib depends on other libraries which are fetched as git submodules, the easiest way to include all of them is to clone this repository recursively into the project.
 ```shell
-git clone --recursive https://github.com/terzaterza/emblibcpp.git
+git clone --recursive https://github.com/terzaterza/emblib.git
 ```
 The library can then be included to a CMake project by adding this subdirectory, and linking the library to your target. CMake library (target) name is `emblib`.
 ```cmake
@@ -52,7 +52,7 @@ void your_function()
 ## CMake configuration
 
 ### emblib
-Configuration header file can (should) be provided by creating `emblib_config` target, before adding the emblibcpp subdirectory, with the include directory attached to the target providing the `emblib_config.hpp`.
+Configuration header file can (should) be provided by creating `emblib_config` target, before adding the emblib subdirectory, with the include directory attached to the target providing the `emblib_config.hpp`.
 ```cmake
 # EMBLIB configuration
 add_library(emblib_config INTERFACE)
