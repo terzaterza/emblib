@@ -62,5 +62,5 @@ Template typenames should have trailing `_type`. When using template literals, t
 ### Typedefs and using
 Suffix `_t`.
 
-### write/read and get/set
-Functions (methods) with write/read names assume that communication will take place outside the main memory (reading from i2c, spi...) where as get/set methods work only with the main memory (ram).
+### API naming - `read`/`write` vs `get`/`set`
+Functions (methods) which are used to communicate data, for example an I2C transaction or a GPIO pin level, should use the `read`/`write` naming convention, where as methods which are used for configuration should use `get`/`set` prefixes.
