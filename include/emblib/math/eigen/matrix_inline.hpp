@@ -54,10 +54,10 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_s
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_scalar, typename rhs_base>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix<rhs_scalar, ROWS, COLS, rhs_base> &rhs) const noexcept
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_shaped_t<rhs_scalar, rhs_base> &rhs) const noexcept
 {
-    auto res = (m_base.array().template cast<scalar_type>() * rhs.get_base().array()).matrix();
-    return matrix_same_t<decltype(res)>(res);
+    auto res = (m_base.array().template cast<rhs_scalar>() * rhs.get_base().array()).matrix();
+    return matrix_shaped_t<rhs_scalar, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>

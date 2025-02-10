@@ -27,7 +27,11 @@ public:
 
     template <typename other_base>
     vector(const matrix<scalar_type, DIM, 1, other_base>& matrix) :
-        matrix<scalar_type, DIM, 1, base_type>(matrix.get_base()) {}
+        matrix<scalar_type, DIM, 1, base_type>(matrix) {}
+
+    template <typename other_base, typename = std::enable_if<!std::is_same_v<scalar_type, bool>>>
+    vector(const matrix<bool, DIM, 1, other_base>& matrix) :
+        matrix<scalar_type, DIM, 1, base_type>(matrix.template cast<scalar_type>()) {}
 
     /**
      * Get element as a copy

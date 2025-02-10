@@ -60,6 +60,12 @@ public:
     matrix(const matrix_same_t<other_base>& other) noexcept : m_base(other.get_base()) {}
 
     /**
+     * Base constructor for creating this out of a bool matrix
+     */
+    template <typename other_base, typename = std::enable_if<!std::is_same_v<scalar_type, bool>>>
+    matrix(const matrix_bool_t<other_base>& other) noexcept : m_base(other.template cast<scalar_type>().get_base()) {}
+
+    /**
      * Initialize all the elements of the matrix to `scalar`
      */
     matrix(scalar_type scalar) noexcept;
@@ -138,7 +144,7 @@ public:
      * Element-wise multiplication of possibly different scalar type
      */
     template <typename rhs_scalar, typename rhs_base>
-    auto operator*(const matrix<rhs_scalar, ROWS, COLS, rhs_base>& rhs) const noexcept;
+    auto operator*(const matrix_shaped_t<rhs_scalar, rhs_base>& rhs) const noexcept;
 
     /**
      * Element-wise multiplication with a scalar
