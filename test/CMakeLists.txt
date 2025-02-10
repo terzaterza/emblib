@@ -5,6 +5,7 @@ enable_testing()
 add_executable(tests
     dsp/kalman.test.cpp
     dsp/iir.test.cpp
+    dsp/pid.test.cpp
     math/matrix.test.cpp
     math/vector.test.cpp
     math/quaternion.test.cpp
