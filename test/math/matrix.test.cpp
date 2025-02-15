@@ -61,3 +61,14 @@ TEST_CASE("Matrix submatrix edit", "[math][matrix]")
     matrixf<3, 4> expected {{1, 2, 3, 4}, {5, 6, 20, 8}, {9, 10, 11, 30}};
     REQUIRE((a == expected).all());
 }
+
+TEST_CASE("Matrix submatrix set", "[math][matrix]")
+{
+    using emblib::math::matrixf;
+    matrixf<3, 4> a {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+    
+    a.set_submatrix(1, 1, matrixf<2>::diagonal(3));
+    
+    matrixf<3, 4> expected {{1, 2, 3, 4}, {5, 3, 0, 8}, {9, 0, 3, 12}};
+    REQUIRE((a == expected).all());
+}

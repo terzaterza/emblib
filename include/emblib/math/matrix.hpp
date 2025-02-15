@@ -287,6 +287,25 @@ public:
     }
 
     /**
+     * Assign a submatrix
+     */
+    template <size_t OTHER_ROWS, size_t OTHER_COLS, typename other_base>
+    void set_submatrix(
+        size_t row_begin,
+        size_t col_begin,
+        const matrix<scalar_type, OTHER_ROWS, OTHER_COLS, other_base>& other
+    ) noexcept
+    {
+        if ((row_begin + OTHER_ROWS > ROWS) || (col_begin + OTHER_COLS > COLS))
+            return;
+
+        for (size_t r = 0; r < OTHER_ROWS; r++) {
+            for (size_t c = 0; c < OTHER_COLS; c++)
+                (*this)(row_begin + r, col_begin + c) = other(r, c);
+        }
+    }
+
+    /**
      * Diagonal matrix
      */
     static matrix diagonal(scalar_type diag_elem = 1) noexcept
