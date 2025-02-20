@@ -72,21 +72,7 @@ public:
      */
     static inline void sleep(ticks_t duration) noexcept;
 
-    /**
-     * Put this task to sleep until (last wake up time from this method + period)
-     * @note First time this is called, next wake up time is relative to task creation
-     * @todo Can change return type to bool to signal if woke up on time
-     */
-    void sleep_periodic(ticks_t period) noexcept;
-
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
-    /**
-     * Wait for this task to get notified
-     * @note Lightweight version of a semaphore which can be
-     * taken only by this task
-     */
-    bool wait_notification(ticks_t timeout = MAX_TICKS) noexcept;
-
     /**
      * Increment this task's notification value
      * @note Unblocks this task if is currently waiting on notification
@@ -107,6 +93,23 @@ public:
     {
         return m_native_task;
     }
+
+protected:
+    /**
+     * Put this task to sleep until (last wake up time from this method + period)
+     * @note First time this is called, next wake up time is relative to task creation
+     * @todo Can change return type to bool to signal if woke up on time
+     */
+    void sleep_periodic(ticks_t period) noexcept;
+
+#if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
+    /**
+     * Wait for this task to get notified
+     * @note Lightweight version of a semaphore which can be
+     * taken only by this task
+     */
+    bool wait_notification(ticks_t timeout = MAX_TICKS) noexcept;
+#endif
 
 private:
     /**
