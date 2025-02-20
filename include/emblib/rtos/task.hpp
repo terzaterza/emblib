@@ -92,6 +92,12 @@ public:
      * @note Unblocks this task if is currently waiting on notification
      */
     void notify() noexcept;
+
+    /**
+     * Increment this task's notification value from ISR
+     * @note Unblocks this task if is currently waiting on notification
+     */
+    void notify_from_isr() noexcept;
 #endif
 
     /**

@@ -31,4 +31,9 @@ inline void task::notify() noexcept
 {
     m_native_task.notify();
 }
+
+inline void task::notify_from_isr() noexcept
+{
+    m_native_task.notify_from_isr();
+}
 #endif
