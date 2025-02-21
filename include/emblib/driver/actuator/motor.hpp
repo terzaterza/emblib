@@ -3,7 +3,7 @@
 #include "emblib/emblib.hpp"
 #include <cmath>
 
-namespace emblib {
+namespace emblib::driver {
 
 class motor {
 
@@ -39,6 +39,18 @@ public:
      */
     virtual float get_time_constant() const noexcept = 0;
 
+    /**
+     * Return true if the shaft is spinning CCW when
+     * looking at the shaft from the front of the motor
+     */
+    virtual bool get_direction() const noexcept = 0;
+
 };
 
 }
+
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace driver;
+}
+#endif
