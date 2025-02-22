@@ -19,23 +19,25 @@ public:
     virtual ~motor() = default;
 
     /**
-     * Set the speed of the motor
+     * Set the motor throttle
+     * @param throttle Value in the range `[0, 1]`
      * @returns true if successful
-     * @todo Change to `set_speed`
+     * @todo Change to `set_throttle`
      */
-    virtual bool write_speed(float rad_per_sec) noexcept = 0;
+    virtual bool write_throttle(float throttle) noexcept = 0;
     
     /**
-     * Read the current motor speed
+     * Read the current motor throttle
+     * @param throttle Assigned value must be between 0 and 1 (inclusive)
      * @returns true if successful
      */
-    virtual bool read_speed(float& rad_per_sec) noexcept = 0;
+    virtual bool read_throttle(float& throttle) noexcept = 0;
 
     /**
      * Assuming a first order approximation of the transfer
-     * function in the form:
+     * function for the throttle response in the form:
      * `G(s) = 1 / (1 + s k_t)`
-     * return `k_t`
+     * returns `k_t`
      */
     virtual float get_time_constant() const noexcept = 0;
 
