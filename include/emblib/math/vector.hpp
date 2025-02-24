@@ -1,7 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "./matrix.hpp"
+#include "matrix.hpp"
+#include <cmath>
 
 namespace emblib::math {
 
@@ -85,6 +86,23 @@ public:
             res += elem * elem;
         }
         return res;
+    }
+    
+    /**
+     * Compute the norm
+     */
+    scalar_type norm() const noexcept
+    {
+        return std::sqrt(norm_sq());
+    }
+
+    /**
+     * Returns a new vector with the same direction
+     * and unit magnitude
+     */
+    vector normalized() const noexcept
+    {
+        return *this / norm();
     }
 
     /**
