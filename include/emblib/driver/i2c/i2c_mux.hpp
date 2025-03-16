@@ -2,18 +2,18 @@
 
 #include "emblib/emblib.hpp"
 #include "etl/vector.h"
-#include "./i2c_master.hpp"
+#include "i2c_bus.hpp"
 
 namespace emblib::driver {
 
 /**
- * @note Can also extends i2c_master to allow i2c master
+ * @note Can also extends i2c_bus to allow i2c master
  * operations to the last selected output channel
  */
 class i2c_mux {
 
 public:
-    explicit i2c_mux(i2c_master& parent, size_t channel_count) :
+    explicit i2c_mux(i2c_bus& parent, size_t channel_count) :
         m_parent(parent), m_channel_count(channel_count), m_current_index(-1)
     {
         assert(channel_count <= I2C_MUX_MAX_CHANNELS);
@@ -28,7 +28,7 @@ public:
      * Get a reference (pointer) to a wrapper i2c master class
      * for the output channel with the given index (starting with 0)
      */
-    i2c_master* get_channel(size_t ch_index) const noexcept
+    i2c_bus* get_channel(size_t ch_index) const noexcept
     {
         if (ch_index >= m_channel_count) {
             return nullptr;
@@ -77,7 +77,7 @@ private:
     /**
      * Wrapper class for enabling looking at output channels as separate i2c bus masters
      */
-    class i2c_mux_channel : public i2c_master {
+    class i2c_mux_channel : public i2c_bus {
 
     public:
         explicit i2c_mux_channel(i2c_mux& mux, size_t index) :
@@ -125,7 +125,7 @@ private:
     size_t m_channel_count;
     ssize_t m_current_index;
 
-    i2c_master& m_parent;
+    i2c_bus& m_parent;
 
 };
 

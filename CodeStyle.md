@@ -7,7 +7,7 @@ Methods are listed in the order: public, protected, private.
 Methods should start with a verb, for example `int get_count()` instead of `int count()` or `bool is_ready()` instead of `bool ready()`. Static variables inside methods and functions are not prefixed with `s_`.
 
 ```cpp
-class i2c_master {
+class i2c_bus {
     ...
 }
 ```

@@ -2,7 +2,7 @@
 
 #include "emblib/emblib.hpp"
 #include "emblib/driver/io/char_dev.hpp"
-#include "./i2c_master.hpp"
+#include "i2c_bus.hpp"
 
 namespace emblib::driver {
 
@@ -13,7 +13,7 @@ namespace emblib::driver {
 class i2c_dev : public char_dev {
 
 public:
-    explicit i2c_dev(i2c_master& i2c_bus, i2c_address_t address)
+    explicit i2c_dev(i2c_bus& i2c_bus, i2c_address_t address)
         : m_i2c_bus(i2c_bus), m_address(address) {}
 
     /**
@@ -66,7 +66,7 @@ public:
 
 private:
     i2c_address_t m_address;
-    i2c_master& m_i2c_bus;
+    i2c_bus& m_i2c_bus;
 };
 
 }

@@ -17,22 +17,22 @@ typedef uint16_t i2c_address_t;
  * @todo Currently not supporting 10 bit addresses, but can
  * add this property to constructor parameters
  */
-class i2c_master {
+class i2c_bus {
 
 public:
     /* Private typedef for async operation callbacks */
     using callback_t = std::function<void(ssize_t)>;
 
-    explicit i2c_master() = default;
-    virtual ~i2c_master() = default;
+    explicit i2c_bus() = default;
+    virtual ~i2c_bus() = default;
 
     /* Copy operations not allowed */
-    i2c_master(const i2c_master&) = delete;
-    i2c_master& operator=(const i2c_master&) = delete;
+    i2c_bus(const i2c_bus&) = delete;
+    i2c_bus& operator=(const i2c_bus&) = delete;
 
     /* Move operations not allowed */
-    i2c_master(i2c_master&&) = delete;
-    i2c_master& operator=(i2c_master&&) = delete;
+    i2c_bus(i2c_bus&&) = delete;
+    i2c_bus& operator=(i2c_bus&&) = delete;
 
     /**
      * Write an array of bytes to the device with the specified address
