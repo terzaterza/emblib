@@ -21,9 +21,9 @@ public:
      * @returns `-1` if error, else number of bytes written
      * @note Exits once the write operation is complete
     */
-    ssize_t write(const char* data, size_t size) noexcept override
+    ssize_t write(const char* data, size_t size, milliseconds timeout) noexcept override
     {
-        return m_i2c_bus.write(m_address, data, size);
+        return m_i2c_bus.write(m_address, data, size, timeout);
     }
 
     /**
@@ -31,9 +31,9 @@ public:
      * @returns `-1` if error, else number of bytes read
      * @note Exits once the read operation is complete
     */
-    ssize_t read(char* buffer, size_t size) noexcept override
+    ssize_t read(char* buffer, size_t size, milliseconds timeout) noexcept override
     {
-        return m_i2c_bus.read(m_address, buffer, size);
+        return m_i2c_bus.read(m_address, buffer, size, timeout);
     }
 
     /**

@@ -83,20 +83,20 @@ private:
         explicit i2c_mux_channel(i2c_mux& mux, size_t index) :
             m_mux(mux), m_index(index) {}
 
-        ssize_t write(i2c_address_t address, const char* data, size_t size) noexcept override
+        ssize_t write(i2c_address_t address, const char* data, size_t size, milliseconds timeout) noexcept override
         {
             if (!m_mux.select_channel(m_index)) {
                 return -1;
             }
-            return m_mux.m_parent.write(address, data, size);
+            return m_mux.m_parent.write(address, data, size, timeout);
         }
 
-        ssize_t read(i2c_address_t address, char* buffer, size_t size) noexcept override
+        ssize_t read(i2c_address_t address, char* buffer, size_t size, milliseconds timeout) noexcept override
         {
             if (!m_mux.select_channel(m_index)) {
                 return -1;
             }
-            return m_mux.m_parent.read(address, buffer, size);
+            return m_mux.m_parent.read(address, buffer, size, timeout);
         }
 
         bool write_async(i2c_address_t address, const char* data, size_t size, const callback_t cb = callback_t()) noexcept override
@@ -104,7 +104,7 @@ private:
             if (!m_mux.select_channel(m_index)) {
                 return -1;
             }
-            return m_mux.m_parent.write_async(address, data, size);
+            return m_mux.m_parent.write_async(address, data, size, cb);
         }
 
         bool read_async(i2c_address_t address, char* buffer, size_t size, const callback_t cb = callback_t()) noexcept
@@ -112,7 +112,7 @@ private:
             if (!m_mux.select_channel(m_index)) {
                 return -1;
             }
-            return m_mux.m_parent.read_async(address, buffer, size);
+            return m_mux.m_parent.read_async(address, buffer, size, cb);
         }
 
     private:
