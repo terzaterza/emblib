@@ -1,11 +1,11 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "three_axes_sensor.hpp"
+#include "three_axis_sensor.hpp"
 
 namespace emblib::driver {
 
-class accelerometer : public three_axes_sensor<float> {
+class accelerometer : public three_axis_sensor<float> {
 
 public:
     /**

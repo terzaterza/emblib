@@ -5,7 +5,7 @@
 namespace emblib::driver {
 
 template <typename data_type>
-class three_axes_sensor {
+class three_axis_sensor {
 
 public:
     /* Used for read axis method */
@@ -17,8 +17,8 @@ public:
     /**
      * Default constructor and destructor
     */
-    explicit three_axes_sensor() = default;
-    virtual ~three_axes_sensor() = default;
+    explicit three_axis_sensor() = default;
+    virtual ~three_axis_sensor() = default;
 
     /**
      * Check if the sensor identifies correctly
@@ -46,9 +46,9 @@ public:
     virtual bool read_all_axes(data_type (&out_data)[3]) noexcept
     {
         bool success = true;
-        success &= read_axis(axis_e::X, out_data[0]);
-        success &= read_axis(axis_e::Y, out_data[1]);
-        success &= read_axis(axis_e::Z, out_data[2]);
+        success &= read_axis(axis_e::X, out_data[(int)axis_e::X]);
+        success &= read_axis(axis_e::Y, out_data[(int)axis_e::Y]);
+        success &= read_axis(axis_e::Z, out_data[(int)axis_e::Z]);
         return success;
     }
 

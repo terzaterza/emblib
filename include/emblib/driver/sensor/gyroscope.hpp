@@ -1,12 +1,12 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "three_axes_sensor.hpp"
+#include "three_axis_sensor.hpp"
 #include <cmath>
 
 namespace emblib::driver {
 
-class gyroscope : public three_axes_sensor<float> {
+class gyroscope : public three_axis_sensor<float> {
 
 public:
     /**
