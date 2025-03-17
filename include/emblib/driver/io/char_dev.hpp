@@ -36,14 +36,14 @@ public:
      * @returns `-1` if error, else number of bytes written
      * @note Exits once the write operation is complete
     */
-    virtual ssize_t write(const char* data, size_t size, milliseconds timeout) noexcept = 0;
+    virtual ssize_t write(const char* data, size_t size, milliseconds timeout = MAX_MILLISECONDS) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer
      * @returns `-1` if error, else number of bytes read
      * @note Exits once the read operation is complete
     */
-    virtual ssize_t read(char* buffer, size_t size, milliseconds timeout) noexcept = 0;
+    virtual ssize_t read(char* buffer, size_t size, milliseconds timeout = MAX_MILLISECONDS) noexcept = 0;
 
     /**
      * Start an async write
