@@ -17,21 +17,19 @@ public:
         : m_i2c_bus(i2c_bus), m_address(address) {}
 
     /**
-     * Write an array of bytes
-     * @returns `-1` if error, else number of bytes written
-     * @note Exits once the write operation is complete
+     * Write an array of bytes to this device
+     * @note Refer to `char_dev::write`
     */
-    ssize_t write(const char* data, size_t size, milliseconds timeout) noexcept override
+    ssize_t write(const char* data, size_t size, milliseconds timeout = milliseconds::max()) noexcept override
     {
         return m_i2c_bus.write(m_address, data, size, timeout);
     }
 
     /**
      * Read up to `size` bytes into the buffer
-     * @returns `-1` if error, else number of bytes read
-     * @note Exits once the read operation is complete
+     * @note Refer to `char_dev::read`
     */
-    ssize_t read(char* buffer, size_t size, milliseconds timeout) noexcept override
+    ssize_t read(char* buffer, size_t size, milliseconds timeout = milliseconds::max()) noexcept override
     {
         return m_i2c_bus.read(m_address, buffer, size, timeout);
     }
