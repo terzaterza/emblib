@@ -1,4 +1,4 @@
-#include "emblib/driver/io/stdio_dev.hpp"
+#include "emblib/driver/stdio_dev.hpp"
 #include "catch2/catch_test_macros.hpp"
 
 TEST_CASE("std io test", "[driver][io]")

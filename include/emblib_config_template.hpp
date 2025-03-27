@@ -17,6 +17,6 @@ namespace emblib {
 /**
  * Capacity for the output channel wrapper class vector
  */
-static constexpr size_t I2C_MUX_MAX_CHANNELS = 8;
+static constexpr int I2C_MUX_MAX_CHANNELS = 8;
 
 }

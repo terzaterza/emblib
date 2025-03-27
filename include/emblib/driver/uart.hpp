@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/driver/io/char_dev.hpp"
+#include "char_dev.hpp"
 
 namespace emblib::driver {
 
