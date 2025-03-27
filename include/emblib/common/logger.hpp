@@ -2,8 +2,9 @@
 
 #include "emblib/driver/io/char_dev.hpp"
 #include "emblib/rtos/mutex.hpp"
-#include "etl/string.h"
-#include "etl/to_string.h"
+
+#include <etl/string.h>
+#include <etl/to_string.h>
 
 namespace emblib {
 

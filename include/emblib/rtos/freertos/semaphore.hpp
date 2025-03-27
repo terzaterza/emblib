@@ -1,8 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "FreeRTOS.h"
-#include "semphr.h"
+#include <FreeRTOS.h>
+#include <semphr.h>
 
 namespace emblib::rtos::freertos {
 

@@ -1,3 +1,17 @@
+# Code style
+
+## Includes
+
+Include statements should be in the following way:
+1. Header file corresponding to this source file (if applicable)
+2. Project header files
+3. Library/external header files
+4. Standard library
+
+In addition files from this project should be included with `""`, and external/standard library headers should be included with `<>`.
+
+These groups can (not necessary) be separated by an empty line and files in each group should be sorted alphabetically.
+
 ## Naming and notation
 
 ### Classes
@@ -23,17 +37,6 @@ struct i2c_device_desc_s {
 }
 ```
 
-### Constants
-All uppercase with underscores separating words.
-
-Use `constexpr` whenever possible, `#define` for creating constants should only be used for boolean type constants:
-
-```cpp
-#define USE_MUTEX_INSIDE_LOGGER     1
-
-constexpr size_t OUT_PORT_BUFFER_SIZE = 12;
-```
-
 ### Enums
 Enum classes should have the `_e` suffix. Members should follow rules for constants.
 
@@ -55,6 +58,17 @@ enum colors_e {
 
 ### Unions
 Suffix `_u`. Don't use classes inside unions, only structs and primitive types.
+
+### Constants
+All uppercase with underscores separating words.
+
+Use `constexpr` whenever possible, `#define` for creating constants should only be used for boolean type constants:
+
+```cpp
+#define USE_MUTEX_INSIDE_LOGGER     1
+
+constexpr size_t OUT_PORT_BUFFER_SIZE = 12;
+```
 
 ### Template types
 Template typenames should have trailing `_type`. When using template literals, they should follow rules for constants.

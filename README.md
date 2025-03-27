@@ -41,7 +41,7 @@ Header files are meant to be standalone, meaning it's enough to include only the
 
 To use a `matrix` class for example, you would add the following to your code:
 ```cpp
-#include "emblib/math/matrix.hpp"
+#include <emblib/math/matrix.hpp>
 
 void your_function()
 {

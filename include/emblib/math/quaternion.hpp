@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "./vector.hpp"
+#include "vector.hpp"
 
 namespace emblib::math {
 

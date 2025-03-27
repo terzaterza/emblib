@@ -1,8 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "etl/array.h"
-#include "etl/vector.h"
+#include <etl/array.h>
+#include <etl/vector.h>
 
 namespace emblib::dsp {
 

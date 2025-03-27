@@ -3,15 +3,15 @@
 #include "emblib/emblib.hpp"
 
 #if EMBLIB_MATH_USE_GLM
-    #include "glm/matrix.hpp"
+    #include <glm/matrix.hpp>
 #elif EMBLIB_MATH_USE_EIGEN
     #define EIGEN_NO_MALLOC
-    #include "Eigen/Dense"
+    #include <Eigen/Dense>
 #elif EMBLIB_MATH_USE_XTENSOR
     #define XTENSOR_ENABLE_ASSERT
     #define XTENSOR_CHECK_DIMENSIONS
-    #include "xtensor/xfixed.hpp"
-    #include "xtensor-blas/xlinalg.hpp"
+    #include <xtensor/xfixed.hpp>
+    #include <xtensor-blas/xlinalg.hpp>
 #else
     #include <array>
 #endif
@@ -342,7 +342,7 @@ using matrixf = matrix<float, ROWS, COLS>;
 
 #if EMBLIB_MATH_USE_GLM
 #elif EMBLIB_MATH_USE_EIGEN
-    #include "./eigen/matrix_inline.hpp"
+    #include "eigen/matrix_inline.hpp"
 #else
 #endif
 

@@ -2,11 +2,12 @@
 
 #include "emblib/emblib.hpp"
 #include "emblib/common/time.hpp"
-#include <functional>
 
 #if EMBLIB_CHAR_DEV_SUPPORT_ETL
-#include "etl/string.h"
+#include <etl/string.h>
 #endif
+
+#include <functional>
 
 namespace emblib::driver {
 

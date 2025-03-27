@@ -1,8 +1,8 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
-#include "etl/vector.h"
 #include "i2c_bus.hpp"
+#include "emblib/emblib.hpp"
+#include <etl/vector.h>
 
 namespace emblib::driver {
 
